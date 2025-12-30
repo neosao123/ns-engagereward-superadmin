@@ -18,6 +18,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CronjobController;
+use App\Http\Controllers\PaymentSettingController;
 
 use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
@@ -260,6 +261,13 @@ Route::group(['middleware' => ['PreventBack']], function () {
         });
 
         Route::resource('subscription-plan', SubscriptionPlanController::class);
+
+
+        /** --------------------------------------------------------------------------------------------------
+         * payment setting
+        * --------------------------------------------------------------------------------------------------- */
+		Route::get('/payment-setting', [PaymentSettingController::class, 'create']);
+        Route::post('/payment-setting/store', [PaymentSettingController::class, 'store']);
 
 	 });
 

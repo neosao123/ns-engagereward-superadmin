@@ -291,4 +291,35 @@ return [
     'login_url'=>'Login URL',
     'company_reg'=>'Company Registration',
     'enter_min_8_characters'=>'At least 8 characters',
+     // Payment Setting Translations
+    'payment_setting' => 'Payment Setting',
+    'add_payment_setting' => 'Add Payment Setting',
+    'edit_payment_setting' => 'Edit Payment Setting',
+
+    // Payment Fields
+    'payment_mode' => 'Payment Mode',
+    'select_payment_mode' => 'Select Payment Mode',
+    'test_mode' => 'Test Mode',
+    'live_mode' => 'Live Mode',
+
+    'payment_gateway' => 'Payment Gateway',
+    'enter_payment_gateway' => 'Enter Payment Gateway',
+
+    'test_secret_key' => 'Test Secret Key',
+    'enter_test_secret_key' => 'Enter Test Secret Key',
+
+    'test_client_id' => 'Test Client ID',
+    'enter_test_client_id' => 'Enter Test Client ID',
+
+    'live_secret_key' => 'Live Secret Key',
+    'enter_live_secret_key' => 'Enter Live Secret Key',
+
+    'live_client_id' => 'Live Client ID',
+    'enter_live_client_id' => 'Enter Live Client ID',
+
+    'webhook_secret_key_test' => 'Webhook Secret Key (Test)',
+    'enter_webhook_secret_key' => 'Enter Webhook Secret Key',
+
+    'webhook_secret_live_key' => 'Webhook Secret Live Key',
+    'enter_webhook_secret_live_key' => 'Enter Webhook Secret Live Key',
 ];

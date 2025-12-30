@@ -81,6 +81,15 @@
                             </a>
                         </li>
 						 @endhaspermission
+                         @haspermission('PaymentSetting.Create', 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/payment-setting') }}" data-bs-toggle="" aria-expanded="false">
+                                <div class="d-flex align-items-center">
+                                    <span class="fas fa-users"></span><span class="nav-link-text ps-1">{{ __('index.payment_setting') }}</span>
+                                </div>
+                            </a>
+                        </li>
+						 @endhaspermission
                     </ul>
                 </li>
                 @endcanany
