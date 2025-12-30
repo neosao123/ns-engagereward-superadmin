@@ -1,0 +1,13 @@
+.font-sans-serif{
+	font-size:20px;
+}
+
+.navbar-vertical .navbar-collapse
+ {
+    padding: 5px !important;
+    background-color: rgb(101 199 222) !important;
+}
+
+.navbar-vertical .navbar-nav .nav-item .nav-link {
+    color:#000000 !important;
+}
