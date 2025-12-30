@@ -61,7 +61,8 @@ class SubscriptionController extends Controller
                 __FUNCTION__,
                 basename(__FILE__),
                 __LINE__,
-                __FILE__
+                __FILE__,
+                ''
             );
             return response()->json([
                 'status' => 400,
