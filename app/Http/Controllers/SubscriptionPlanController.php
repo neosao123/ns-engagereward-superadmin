@@ -158,7 +158,13 @@ class SubscriptionPlanController extends Controller
                     $action .= '</div></div>';
                 }
 
-                $currencySymbol = '$'; // default symbol
+                $currencySymbol = ''; // default symbol
+
+                if (!empty($sub->currency_code)) {
+                    if (preg_match('/\((.*?)\)/', $sub->currency_code, $matches)) {
+                        $currencySymbol = $matches[1];
+                    }
+                }
 
                 // Per month price
                 $perMonthPrice = $currencySymbol . number_format($sub->subscription_per_month_price, 2);
