@@ -4,7 +4,7 @@
  * - Listing permissions
  * - Adding new permissions
  * - Storing permissions in database
- * 
+ *
  * @author     Neosao Services Pvt Ltd.
  *----------------------------------------------------------------------------------*/
 namespace App\Http\Controllers;
@@ -18,7 +18,7 @@ use App\Helpers\LogHelper;
 
 class PermissionController extends Controller
 {
-   
+
     /**
 	 * Display paginated list of permissions with their groups
 	 */
@@ -82,7 +82,7 @@ class PermissionController extends Controller
         }
     }
 
-  
+
 	/**
 	 * Store new permission in database
 	 */
@@ -138,6 +138,10 @@ class PermissionController extends Controller
 
             // Assign permission to default user (ID = 1)
             $user = User::find(1);
+            $user->givePermissionTo($request->group . '.' . $request->section);
+
+            // Assign permission to default user (ID = 2)
+            $user = User::find(2);
             $user->givePermissionTo($request->group . '.' . $request->section);
 
             return redirect('/configuration/permissions')->with('success', 'Record added successfully');

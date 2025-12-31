@@ -162,8 +162,8 @@
 							{{ __('index.currency') }} <span class="text-danger">*</span>
 						</label>
 
-						<select name="currency"  class="form-control select2" style="width:100%">
-							<option value="USD ($)">USD ($)</option>
+						<select name="currency" class="form-control select2" style="width:100%">
+                           <option value="AED (د.إ)">AED (د.إ)</option>
 						</select>
                         @error('currency')
 							<div class="text-danger mt-1">{{ $message }}</div>

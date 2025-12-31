@@ -169,7 +169,7 @@
 						</label>
 
 						<select name="currency" class="form-control select2 custom-select" style="width:100%">
-							<option value="USD ($)">USD ($)</option>
+							<option value="AED (د.إ)">AED (د.إ)</option>
 
 						</select>
                         @error('currency')
