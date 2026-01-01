@@ -80,12 +80,7 @@
 	      <!-- Comapny Logo -->
 		<div class="mb-1 col-lg-6 col-md-6 col-sm-6 position-relative">
 		  <label class="mb-0 form-label">{{ __('index.company_logo') }} </label>
-		  <p class="mb-0">
-			<small class="form-label">
-			  {{ __('index.accept_format') }}
-			  {{ implode(', ', [__('index.jpg'), __('index.jpeg'), __('index.png')]) }}
-			</small>
-		  </p>
+
 		  <p><small class="form-label">{{ __('index.512x512') }}</small></p>
 
 		  <input type="file" class="form-control" name="company_logo" id="company_logo" accept=".jpg, .jpeg, .png" />

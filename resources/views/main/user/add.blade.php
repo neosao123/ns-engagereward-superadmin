@@ -221,7 +221,8 @@
                                                 class="text-danger">*</span></label>
                                         <div class="input-group has-validation">
                                             <input type="password" class="form-control" name="password" id="password"
-                                                value="{{ old('new_password') }}" placeholder="{{ __('index.enter_min_8_characters') }}">
+                                                value="{{ old('new_password') }}"
+                                                placeholder="{{ __('index.enter_min_8_characters') }}">
                                             <button type="button" class="btn btn-outline-secondary toggle-password"
                                                 data-target="#password">
                                                 <i class="fas fa-eye-slash"></i>
@@ -236,9 +237,10 @@
                                     <div class="col-lg-6 col-md-6 col-sm-12">
                                         <label class="form-label">{{ __('index.password_confirmation') }}<span
                                                 class="text-danger">*</span></label>
-                                          <div class="input-group has-validation">
+                                        <div class="input-group has-validation">
                                             <input type="password" class="form-control" name="password_confirmation"
-                                                id="password_confirmation" value="{{ old('password_confirmation') }}" placeholder="{{ __('index.enter_min_8_characters') }}">
+                                                id="password_confirmation" value="{{ old('password_confirmation') }}"
+                                                placeholder="{{ __('index.enter_min_8_characters') }}">
                                             <button type="button" class="btn btn-outline-secondary toggle-password"
                                                 data-target="#password_confirmation">
                                                 <i class="fas fa-eye-slash icon_attr"></i>
@@ -264,8 +266,11 @@
                                         accept=".jpg, .jpeg, .png">
                                 </div>
                                 <p style="margin-top: 5px; font-size: 0.875rem; color: #666;">
-                                    <strong>Note:</strong> The uploaded image should be in <strong>JPG, JPEG, or
-                                        PNG</strong> format and should have dimensions of <strong>512×512 pixels</strong>.
+                                    <strong>Note:</strong> The uploaded image must be in <strong>JPG, JPEG, or PNG</strong>
+                                    format, should have a
+                                    <strong>1:1 (square) aspect ratio</strong> (e.g., <strong>500×500</strong>, 100×100,
+                                    512×512), and must not exceed
+                                    <strong>2 MB</strong> in size.
                                 </p>
                             </div>
                         </div>

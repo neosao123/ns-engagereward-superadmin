@@ -89,7 +89,7 @@ return [
     "xlsx" => '.XLSX',
     "txt" => '.TXT',
     "1280x720" => "Please upload files with dimensions 1280px x 720px only.",
-    "512x512" => "Please upload files with dimensions 512px x 512px only.",
+    "512x512" => "The uploaded image must be in JPG, JPEG, or PNG format, should have a 1:1 (square) aspect ratio (e.g. 500×500, 100×100, 512×512), and must not exceed 2 MB in size.",
     "activate" => "Activate",
     "suspend" => "Suspend",
     "in_active" => 'Inactive',

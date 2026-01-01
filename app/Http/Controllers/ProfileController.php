@@ -161,7 +161,8 @@ class ProfileController extends Controller
                         ->where("id", '!=', $id);
                 })
             ],
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048|dimensions:ratio=1/1',
+            //'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ], [
             'first_name.required' => 'First name is required.',
             'first_name.regex' => 'The first name must only contain alphabets and spaces.',
@@ -180,7 +181,9 @@ class ProfileController extends Controller
             'email.min' => 'The Email must be at least 2 characters long.',
             'email.max' => 'The Email cannot exceed 150 characters.',
             'avatar.image' => 'The file must be an image.',
-            'avatar.mimes' => 'The image must be of type: jpeg, png, jpg, gif.',
+            'avatar.mimes' => 'The image must be of type: jpeg, png, jpg.',
+            'avatar.dimensions' => 'The image must be square (1:1 aspect ratio).',
+            'avatar.max' => 'The image must not be larger than 2MB.',
         ]);
 
         if ($validator->fails()) {
