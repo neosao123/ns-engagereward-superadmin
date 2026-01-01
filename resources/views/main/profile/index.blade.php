@@ -126,6 +126,14 @@
                                     <input type="file" id="file" class="form-control " name="avatar"
                                         accept=".jpg, .jpeg, .png">
                                 </div>
+
+                                <p style="margin-top: 5px; font-size: 0.875rem; color: #666;">
+                                    <strong>Note:</strong> The uploaded image must be in <strong>JPG, JPEG, or PNG</strong>
+                                    format,
+                                    should have a <strong>1:1 (square) aspect ratio</strong> (e.g.,
+                                    <strong>500×500</strong>, 100×100, 512×512), and must not exceed
+                                    <strong>2 MB</strong> in size.
+                                </p>
                             </div>
                         </div>
                         <div class="row gx-3">

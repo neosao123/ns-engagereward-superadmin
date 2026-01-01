@@ -661,7 +661,9 @@ class CompanyController extends Controller
             ],
             //'gst_number' => 'nullable|regex:/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}Z[A-Z\d]{1}$/',
             'account_status' => 'nullable|in:active,suspended',
-            'company_logo' => 'nullable|image|mimes:jpg,jpeg,png|dimensions:width=512,height=512',
+
+            'company_logo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048|dimensions:ratio=1/1',
+            //'company_logo' => 'nullable|image|mimes:jpg,jpeg,png|dimensions:width=512,height=512',
             'is_active' => 'nullable|boolean',
             // 'password' => 'required|min:6|max:20|regex:/^\S+$/',
             //'password_confirmation' => 'required|same:password|regex:/^\S+$/',
@@ -707,7 +709,9 @@ class CompanyController extends Controller
             //'company_logo.required' => 'Please upload a company logo.',
             'company_logo.image' => 'The uploaded file must be an image.',
             'company_logo.mimes' => 'Only JPG, JPEG, and PNG images are allowed.',
-            'company_logo.dimensions' => 'Logo must be exactly 512x512 pixels.',
+            //'company_logo.dimensions' => 'Logo must be exactly 512x512 pixels.',
+            'company_logo.dimensions' => 'Logo must be square (1:1 aspect ratio).',
+            'company_logo.max' => 'Logo must not be larger than 2MB.',
 
             'is_active.boolean' => 'Please select a valid status.',
 
@@ -1534,7 +1538,8 @@ class CompanyController extends Controller
     {
 
         $company_id = $r->company_id;
-        $companyLogoRule = ($r->existing_company_logo ? 'nullable' : 'nullable') . '|image|mimes:jpg,jpeg,png|dimensions:width=512,height=512';
+        $companyLogoRule = ($r->existing_company_logo ? 'nullable' : 'nullable') . '|image|mimes:jpg,jpeg,png|max:2048|dimensions:ratio=1/1';
+       // $companyLogoRule = ($r->existing_company_logo ? 'nullable' : 'nullable') . '|image|mimes:jpg,jpeg,png|dimensions:width=512,height=512';
         $rules = [
             'company_name' => 'required|string|max:100',
             'trade_name' => 'nullable|string|max:100',
@@ -1639,6 +1644,9 @@ class CompanyController extends Controller
             //'company_logo.required' => 'Company logo is required.',
             'company_logo.image' => 'The file must be an image.',
             'company_logo.mimes' => 'Logo must be a file of type: jpg, jpeg, png.',
+
+            'company_logo.dimensions' => 'Logo must be square (1:1 aspect ratio).',
+            'company_logo.max' => 'Logo must not be larger than 2MB.',
 
             'is_active.boolean' => 'The active status must be true or false.',
 
