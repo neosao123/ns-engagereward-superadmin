@@ -53,7 +53,7 @@ class CronjobController extends Controller
                             LogHelper::logSuccess('Package Expired', "Package ID {$package->id} for Company ID {$company->id} marked as expired.", __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, '');
 
                             $adminData = [
-                                'package_id' => $package->id,
+                                'package_id' => $package->subscription_purchase_id,
                                 'status' => 'expired',
                                 'is_active' => 0
                             ];
@@ -92,7 +92,7 @@ class CronjobController extends Controller
 
                             $nextPackageAdminData = [
                                 'company_id' => $company->id,
-                                'package_id' => $nextPackage->id,
+                                'package_id' => $nextPackage->subscription_purchase_id,
                                 'status' => 'active',
                                 'is_active' => 1
                             ];

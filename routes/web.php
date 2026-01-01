@@ -19,6 +19,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CronjobController;
 use App\Http\Controllers\PaymentSettingController;
+use App\Http\Controllers\WebhookController;
 
 use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
@@ -35,6 +36,8 @@ use App\Models\User;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::post('/payment/callback',  [WebhookController::class, 'stripewebhook']);
+
 Route::get('clear', function () {
     Artisan::call('optimize:clear');
     Artisan::call('cache:clear');
@@ -273,6 +276,6 @@ Route::group(['middleware' => ['PreventBack']], function () {
 
 });
 
-Route::fallback(function (){
+/*Route::fallback(function (){
     return view('unauthorize');
-});
+});*/
