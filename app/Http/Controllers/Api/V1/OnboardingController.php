@@ -410,6 +410,7 @@ class OnboardingController extends Controller
                             'title' => 'Mail from EngageReward',
                             'url' => $company_url,
                             'name' => $company->company_name,
+                            'company_code'=>$company->company_code,
                             'user_id' => 'admin@engagereward.com',
                             'password' => 'password@123'
                         ];
