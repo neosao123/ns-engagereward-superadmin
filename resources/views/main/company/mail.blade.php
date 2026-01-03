@@ -92,8 +92,9 @@
       <p>Congratulations! Your Company has been successfully onboarded. Below are your account details:</p>
 
       <div class="detail"><strong>Company Name:</strong> {{ $details['name'] }}</div>
+       <div class="detail"><strong>Company Code:</strong> {{ $details['company_code'] }}</div>
       <div class="detail"><strong>URL:</strong> <a href="{{ $details['url'] }}" target="_blank">{{ $details['url'] }}</a></div>
-      <div class="detail"><strong>User ID:</strong> {{ $details['user_id'] }}</div>
+      <div class="detail"><strong>Email:</strong> {{ $details['user_id'] }}</div>
       <div class="detail"><strong>Password:</strong> {{ $details['password'] }}</div>
 
       <a href="{{ $details['url'] }}" class="btn-login" target="_blank" style="color:white">LOGIN TO DASHBOARD</a>
