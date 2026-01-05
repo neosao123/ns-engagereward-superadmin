@@ -208,7 +208,7 @@ $(function () {
                     $('#preview_img').attr('src', img.src);
                     $('#image_preview').removeClass('d-none').show();
                     $('#error_message').hide();
-                    $("#remove_image").hide();
+
                     // Validate dimensions (for landscape image)
                     /*if (width !== 512 || height !== 512) {
                         $('#error_message').text('The entity icon must be exactly 512x512 pixels in size.').show();
@@ -233,6 +233,12 @@ $(function () {
     });
 
 
+    $('#remove_logo').on('click', function () {
+        $('#company_logo').val('');      // clear file input
+        $('#preview_img').attr('src', '');
+        $('#image_preview').hide();
+        $('#error_message').hide();
+    });
 
     $('#is_billing_address_same').on('change', function () {
         if ($(this).is(':checked')) {
@@ -986,11 +992,11 @@ $(function () {
                     $("#document_form_add").addClass("was-invalid");
 
 
-                     if (response.errors.documents) {
+                    if (response.errors.documents) {
                         const errorContainer = $('<div class="text-danger mb-3 text-center"></div>')
                             .text(response.errors.documents[0]);
                         $("#document_form_add .card-body").prepend(errorContainer);
-                     }
+                    }
 
                     $.each(response.errors, function (key, value) {
                         const parts = key.match(/documents\.(\d+)\.(\w+)/);

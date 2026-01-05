@@ -86,7 +86,7 @@
 		  <input type="file" class="form-control" name="company_logo" id="company_logo" accept=".jpg, .jpeg, .png" />
 		  <div id="image_preview" class="mt-2" style="display: none;">
 			<img id="preview_img" src="#" alt="Image Preview" class="img-fluid" style="width: 125px; height: 125px;" />
-			<button type="button" id="remove_image" class="btn btn-danger"
+			<button type="button" id="remove_logo" class="btn btn-danger"
 			  style="position: absolute; top: 5px; right: 5px; border-radius: 50%; width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;">
 			  &times; <!-- This will display an 'X' -->
 			</button>
