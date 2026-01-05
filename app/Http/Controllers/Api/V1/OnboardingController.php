@@ -411,7 +411,7 @@ class OnboardingController extends Controller
                             'url' => $company_url,
                             'name' => $company->company_name,
                             'company_code'=>$company->company_code,
-                            'user_id' => 'admin@engagereward.com',
+                            'user_id' => $company->email,
                             'password' => 'password@123'
                         ];
                         Mail::to($email)->send(new \App\Mail\CompanyEmail($details));

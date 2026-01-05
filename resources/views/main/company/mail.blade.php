@@ -105,7 +105,7 @@
         Didn’t request this? Just ignore this email or contact us at
         <a href="mailto:{{ env('SUPPORT_MAIL') }}">
             {{ env('SUPPORT_MAIL') }}
-        </a>.
+        </a>
       </p>
       <p>Thank you,<br>{{ config('app.name') }} Team</p>
     </div>
