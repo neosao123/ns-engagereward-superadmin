@@ -56,11 +56,12 @@ class PermissionTableSeeder extends Seeder
             ['id' => 40, 'name' => 'Subscription.Edit', 'guard_name' => 'admin', 'group_id' => 10],
             ['id' => 41, 'name' => 'Subscription.Delete', 'guard_name' => 'admin', 'group_id' => 10],
             ['id' => 42, 'name' => 'Subscription.View', 'guard_name' => 'admin', 'group_id' => 10],
+            ['id' => 44, 'name' => 'PaymentSetting.Create', 'guard_name' => 'admin', 'group_id' => 11],
         ];
 
         try {
             DB::beginTransaction();
-            
+
             foreach ($permissions as $perm) {
                 $permissionName = $perm['name'];
 

@@ -9,7 +9,6 @@ use App\Http\Controllers\Api\V1\SubscriptionController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PaymentController;
-
 Route::post('/book-company-demo',[BookdemoController::class, 'book_company_demo']);
 Route::get('/payment-setting', [PaymentController::class, 'paymentSetting']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -20,9 +19,6 @@ Route::post('/reset-password', [AuthController::class, 'reset_password']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/company-update', [CompanyController::class, 'update_company_details']);
 Route::get('/subscription-list', [SubscriptionController::class, 'list']);
-
-
-
 Route::post('/subscription-purchase', [SubscriptionController::class, 'subscription_purchase']);
 Route::post('/subscription-package/update/status', [SubscriptionController::class, 'update_purchase_package']);
 Route::post('/update/paypal-order-status', [SubscriptionController::class, 'update_paypal_order_status']);

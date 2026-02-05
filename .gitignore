@@ -9,6 +9,7 @@
 /storage/app/public/company_logos/*.key
 /storage/app/public/setting_logos/*.key
 /vendor
+.env
 .env.backup
 .env.production
 .phpunit.result.cache
