@@ -383,4 +383,58 @@ class AuthController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function check_company_code(Request $request)
+    {
+        try {
+            $rules = [
+                'company_code' => 'required',
+            ];
+            $messages = [
+                'company_code.required' => __('api.company_code_required'),
+            ];
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+                    'message' => $validator->errors()->first()
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            // Find company
+            $company = Company::where("company_code", $request->company_code)->first();
+            if (!$company) {
+                return response()->json([
+                    'status' => Response::HTTP_NOT_FOUND,
+                    'message' => __('api.company_not_found'),
+                    'data' => null
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            if ($company->is_suspend == "1") {
+                return response()->json([
+                    'status' => Response::HTTP_UNAUTHORIZED,
+                    'message' => __('api.company_suspended'),
+                    'data' => null
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+
+            $baseUrl = rtrim(env('ADMIN_API_URL'), '/') . '/' . strtolower($company->company_code) . '/api/' . env('API_VERSION');
+
+            return response()->json([
+                'status' => Response::HTTP_OK,
+                'message' => 'Company verified successfully',
+                'data' => $company,
+                'base_url' => $baseUrl
+            ], Response::HTTP_OK);
+        } catch (\Exception $exception) {
+            LogHelper::logError('exception', 'API => Check Company Code', $exception->getMessage(), __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, '');
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => __('api.exception_message'),
+                'data' => null,
+                'error' => $exception->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

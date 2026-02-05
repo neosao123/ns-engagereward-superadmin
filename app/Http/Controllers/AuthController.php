@@ -536,4 +536,6 @@ class AuthController extends Controller
         }
         return $randomString;
     }
+
+    
 }

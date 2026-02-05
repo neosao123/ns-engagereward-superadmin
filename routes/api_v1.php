@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\V1\PaymentController;
 Route::post('/book-company-demo',[BookdemoController::class, 'book_company_demo']);
 Route::get('/payment-setting', [PaymentController::class, 'paymentSetting']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/check-company-code', [AuthController::class, 'check_company_code']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forget-password', [AuthController::class, 'forget_password']);
