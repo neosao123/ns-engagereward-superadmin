@@ -60,7 +60,8 @@ class Company extends Model
 		'company_country_code',
 		'phone_country',
 		'trade_name',
-		'setup_status'
+		'setup_status',
+		'company_unique_code'
 	];
 
 	public static function filterCompany(

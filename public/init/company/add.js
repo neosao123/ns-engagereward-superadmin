@@ -3,6 +3,80 @@ $(function () {
 
     let documentCounter = 1;
 
+    // Suggestion fetch logic
+    // Suggestion fetch logic
+    function fetchCodeSuggestions(sourceText, shouldAutoFill, showList) {
+        if (sourceText.length > 0) {
+            $.ajax({
+                url: baseUrl + '/company/suggest-code',
+                type: 'GET',
+                data: { name: sourceText },
+                success: function(response) {
+                    // Always clear suggestions first to avoid stale data logic if needed, 
+                    // but we only want to empty DOM if we are about to show something or if we want to hide it.
+                    // If showList is false, we should ensure the list is empty? User said "tab press showing... is wrong".
+                    // So if showList is false, likely we want it empty.
+                    if (showList) {
+                        $('#code-suggestions').empty();
+                    }
+                    
+                    if(response.codes && response.codes.length > 0) {
+                        // Auto-fill only if requested and field is empty
+                        if(shouldAutoFill && $('#company_code').val() === '') {
+                             $('#company_code').val(response.codes[0]);
+                        }
+
+                        if (showList) {
+                            if(response.codes.length > 0) {
+                                 $('#code-suggestions').prepend('<small class="text-muted w-100 d-block mb-1">Suggestions: </small>');
+                            }
+
+                            // Display suggestions
+                            response.codes.forEach(function(code) {
+                                var badge = $('<span class="badge bg-info me-1" style="cursor:pointer;" title="Click to use this code">' + code + '</span>');
+                                badge.on('click', function() {
+                                    $('#company_code').val(code);
+                                });
+                                $('#code-suggestions').append(badge);
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Auto-generate Company Code Handlers
+    let nameSuggestionTimeout;
+    $('#company_name').on('input', function() {
+        $('#company_code').val('');
+        $('#code-suggestions').empty();
+
+        const val = $(this).val();
+        clearTimeout(nameSuggestionTimeout);
+        
+        if (val.length > 0) {
+            nameSuggestionTimeout = setTimeout(function() {
+                // Fetch to autofill, but DO NOT show list
+                fetchCodeSuggestions(val, true, false);
+            }, 500);
+        }
+    });
+
+    let suggestionTimeout;
+    $('#company_code').on('input', function() {
+        const val = $(this).val();
+        clearTimeout(suggestionTimeout);
+        if (val.length > 0) {
+            suggestionTimeout = setTimeout(function() {
+                // Fetch to show list, but DO NOT autofill
+                fetchCodeSuggestions(val, false, true);
+            }, 500);
+        } else {
+             $('#code-suggestions').empty();
+        }
+    });
+
     // Initialize preview for existing rows
     function initFilePreview(input) {
         const previewContainer = $(input).siblings('.file-preview');
