@@ -52,6 +52,7 @@ return new class extends Migration
 			$table->boolean('setup_status')->default(true);
             $table->boolean('is_suspend')->default(false);
 			$table->longText('reason')->nullable();
+            $table->longText('company_unique_code')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

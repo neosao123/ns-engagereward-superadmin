@@ -205,6 +205,7 @@ Route::group(['middleware' => ['PreventBack']], function () {
 			Route::post('store-integration-credentials', [CompanyController::class, 'store_integration_credentials']);
 			Route::delete('integration-credentials/{id}', [CompanyController::class, 'integration_credential_delete']);
 			Route::post('update-status/{id}', [CompanyController::class, 'update_status']);
+			Route::get('suggest-code', [CompanyController::class, 'suggest_code']);
 			Route::get('exceldownload', [CompanyController::class, 'excel_download']);
 			Route::get('pdfdownload', [CompanyController::class, 'pdf_download']);
 			Route::get('list', [CompanyController::class, 'list']);

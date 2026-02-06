@@ -59,6 +59,7 @@ class StoreResponse implements Responsable
 			// basic info
 			"company_code"=>$basic_info['company_code'],
 			"company_key" => $basic_info['company_key'],
+			"company_unique_code" => $basic_info['company_unique_code'],
 			"company_name" => $basic_info['company_name'],
 			"legal_type" => $basic_info['legal_type'],
 			"trade_name" => $basic_info['trade_name'],
