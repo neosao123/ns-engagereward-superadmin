@@ -59,7 +59,7 @@ class CronjobController extends Controller
                             ];
 
                             $response = $this->makeSecurePostApiRequest(
-                                strtolower($company->company_code) . '/api/v1/subscription-plan-update',
+                                strtolower($company->company_unique_code) . '/api/v1/subscription-plan-update',
                                 $adminData
                             )->throw();
 
@@ -98,7 +98,7 @@ class CronjobController extends Controller
                             ];
 
                             $response = $this->makeSecurePostApiRequest(
-                                strtolower($company->company_code) . '/api/v1/subscription-plan-update',
+                                strtolower($company->company_unique_code) . '/api/v1/subscription-plan-update',
                                 $nextPackageAdminData
                             )->throw();
 
