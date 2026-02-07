@@ -138,7 +138,7 @@
 
     {{-- STEP FIVE --}}
     @php
-        $companyCode = $company->company_code;
+        $companyCode = $company->company_unqiue_code;
 
         // Get APP_URL from environment
         $appUrl = env('ADMIN_API_URL');
