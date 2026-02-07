@@ -685,7 +685,7 @@ class CompanyController extends Controller
                 'required',
                 'string',
                 'size:6',
-                'regex:/^[A-Z0-9]+$/',
+                'regex:/^[A-Z]+$/',
                 Rule::unique('companies', 'company_code')->whereNull('deleted_at'),
             ],
 
@@ -1630,6 +1630,13 @@ class CompanyController extends Controller
         $companyLogoRule = ($r->existing_company_logo ? 'nullable' : 'nullable') . '|image|mimes:jpg,jpeg,png|max:2048|dimensions:ratio=1/1';
        // $companyLogoRule = ($r->existing_company_logo ? 'nullable' : 'nullable') . '|image|mimes:jpg,jpeg,png|dimensions:width=512,height=512';
         $rules = [
+            'company_code' => [
+                'required',
+                'string',
+                'size:6',
+                'regex:/^[A-Z]+$/',
+                Rule::unique('companies', 'company_code')->whereNull('deleted_at')->ignore($company_id),
+            ],
             'company_name' => 'required|string|max:100',
             'trade_name' => 'nullable|string|max:100',
             'company_country_code' => 'required',
@@ -1695,6 +1702,11 @@ class CompanyController extends Controller
         ];
 
         $messages = [
+            'company_code.required' => 'Company Code is required.',
+            'company_code.size' => 'Company Code must be 6 characters.',
+            'company_code.regex' => 'Company Code must be uppercase alphanumeric.',
+            'company_code.unique' => 'This Company Code is already taken.',
+
             'company_name.required' => 'The company name is required.',
             'company_name.string' => 'The company name must be a string.',
             'company_name.max' => 'The company name must not exceed 100 characters.',
@@ -1763,6 +1775,7 @@ class CompanyController extends Controller
 
             $data = [
                 'company_id' => $company_id,
+                'company_code' => $r->company_code,
                 'company_name' => $r->company_name,
                 'legal_type' => $r->legal_type,
                 'trade_name' => $r->trade_name,
@@ -1779,6 +1792,7 @@ class CompanyController extends Controller
                 'is_active' => $r->has('is_active') ? 1 : 0,
                 'is_verified' => $r->has('is_verified') ? 1 : 0,
             ];
+
             if (!empty($r->password) && !empty($r->password_confirmation)) {
                 $data["password"] = $r->password;
             }
@@ -2706,7 +2720,7 @@ class CompanyController extends Controller
             $adminData = [
                 "status" => $validated['status']
             ];
-            $this->makeSecurePostApiRequest(strtolower($company->company_code) . '/api/' . env('API_VERSION') . '/company-status-update', $adminData)->throw();
+            $this->makeSecurePostApiRequest(strtolower($company->company_unique_code) . '/api/' . env('API_VERSION') . '/company-status-update', $adminData)->throw();
 
             DB::commit();
 
@@ -2806,7 +2820,7 @@ class CompanyController extends Controller
                 "status" => $request->status,
             ];
 
-            $this->makeSecurePostApiRequest(strtolower($request->company_code) . '/api/' . env('API_VERSION') . '/subscription-plan-update', $adminData)->throw();
+            $this->makeSecurePostApiRequest(strtolower($request->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-update', $adminData)->throw();
 
             //$this->makeSecurePostApiRequest('api/v1/subscription-plan-update', $adminData)->throw();
 
@@ -2888,7 +2902,7 @@ class CompanyController extends Controller
                     "is_active" => 0
                 ];
 
-                $this->makeSecurePostApiRequest(strtolower($request->company_code) . '/api/' . env('API_VERSION') . '/subscription-plan-update', $adminData)->throw();
+                $this->makeSecurePostApiRequest(strtolower($request->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-update', $adminData)->throw();
 
                 //$this->makeSecurePostApiRequest('api/v1/subscription-plan-update', $adminData)->throw();
             }
@@ -2919,7 +2933,7 @@ class CompanyController extends Controller
 
 
             //$this->makeSecurePostApiRequest($company->company_code.'/api/v1/subscription-plan-add', $subscription_plan)->throw();
-            $response = $this->makeSecurePostApiRequest(strtolower($request->company_code) . '/api/' . env('API_VERSION') . '/subscription-plan-add', $subscription_plan)->throw();
+            $response = $this->makeSecurePostApiRequest(strtolower($request->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-add', $subscription_plan)->throw();
             $data = $response->json();
             $subscription_purchase_id = $data['id'] ?? null;
             $subscription_plan["subscription_purchase_id"] = $subscription_purchase_id;

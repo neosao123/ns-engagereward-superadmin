@@ -1,5 +1,55 @@
 
 $(function () {
+    // Suggestion fetch logic
+    function fetchCodeSuggestions(sourceText, shouldAutoFill, showList) {
+        if (sourceText.length > 0) {
+            $.ajax({
+                url: baseUrl + '/company/suggest-code',
+                type: 'GET',
+                data: { name: sourceText },
+                success: function(response) {
+                    if (showList) {
+                        $('#code-suggestions').empty();
+                    }
+                    
+                    if(response.codes && response.codes.length > 0) {
+                        // Auto-fill logic can be skipped for edit mode or added if needed
+                        // Here we mainly want to show suggestions
+
+                        if (showList) {
+                            if(response.codes.length > 0) {
+                                 $('#code-suggestions').prepend('<small class="text-muted w-100 d-block mb-1">Suggestions: </small>');
+                            }
+
+                            // Display suggestions
+                            response.codes.forEach(function(code) {
+                                var badge = $('<span class="badge bg-info me-1" style="cursor:pointer;" title="Click to use this code">' + code + '</span>');
+                                badge.on('click', function() {
+                                    $('#company_code').val(code);
+                                });
+                                $('#code-suggestions').append(badge);
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    let suggestionTimeout;
+    $('#company_code').on('input', function() {
+        const val = $(this).val();
+        clearTimeout(suggestionTimeout);
+        if (val.length > 0) {
+            suggestionTimeout = setTimeout(function() {
+                // Fetch to show list, but DO NOT autofill
+                fetchCodeSuggestions(val, false, true);
+            }, 500);
+        } else {
+             $('#code-suggestions').empty();
+        }
+    });
+
 
     // Initialize counter and hide remove button if only one row
     if ($('.document-row').length <= 1) {

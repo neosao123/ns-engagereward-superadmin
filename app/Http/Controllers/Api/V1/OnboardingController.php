@@ -79,7 +79,7 @@ class OnboardingController extends Controller
             $company = Company::where('id', $companyId)->first();
 
             $response = Http::asMultipart()->post("$this->baseUrl/step1.php", [
-                'company_id' => $company->company_code,
+                'company_id' => $company->company_unique_code,
             ]);
 
 
@@ -100,7 +100,7 @@ class OnboardingController extends Controller
                 $siteSetup->status = 'complete';
                 $siteSetup->save();
                 //update patsanstha code
-                $company->company_code = $jsonResponse['data'];
+                $company->company_unique_code = $jsonResponse['data'];
                 $company->setup_status = 1;
                 $company->save();
                 //commit changes
@@ -133,14 +133,13 @@ class OnboardingController extends Controller
             $database = CompanyDatabase::where('company_id', $company->id)->first();
 
             $postData = [
-                'company_id' => $company->company_code,
+                'company_id' => $company->company_unique_code,
                 'db_name' => $database && isset($database->db_name) ? $database->db_name : '#NA#',
                 'db_user' => $database && isset($database->db_name) ? $database->db_username : '#NA#',
                 'db_password' => $database && isset($database->db_name) ? $database->db_password : '#NA#',
             ];
 
             $response = Http::asMultipart()->post("$this->baseUrl/step2.php", $postData);
-
 
             if ($response->failed()) {
                 return response()->json(['error' => "Failed to process your request at the moment..."], 422);
@@ -188,7 +187,7 @@ class OnboardingController extends Controller
                 //DB::commit();
                 return response()->json(['msg' => $jsonResponse['msg']], 300);
             }
-        } catch (\Exception $e) {
+         } catch (\Exception $e) {
             Log::debug("step 3 error", [$e]);
             //DB::rollBack();
             return response()->json(['msg' => 'Database update failed', 'ex' => $e->getMessage()], 500);
@@ -212,7 +211,7 @@ class OnboardingController extends Controller
 
 
             $response = Http::asMultipart()->post("$this->baseUrl/step3.php", [
-                'company_id' => $company->company_code,
+                'company_id' => $company->company_unique_code,
                 'db_name' => $database && isset($database->db_name) ? $database->db_name : '#NA#',
                 'db_user' => $database && isset($database->db_name) ? $database->db_username : '#NA#',
                 'db_password' => $database && isset($database->db_name) ? $database->db_password : '#NA#',
@@ -275,6 +274,7 @@ class OnboardingController extends Controller
             $response = Http::asForm()->post("$this->baseUrl/step4.php", [
                 'company_id' => $company->id,
                 'company_code' => $company->company_code,
+                'company_unique_code' => $company->company_unique_code,
                 'company_key' => $company->company_key,
                 'db_name' => $database && isset($database->db_name) ? $database->db_name : '#NA#',
                 'db_user' => $database && isset($database->db_username) ? $database->db_username : '#NA#',
@@ -355,6 +355,7 @@ class OnboardingController extends Controller
                 $siteSetup->save();
                 // update database
                 $company->company_code = strtoupper($company->company_code);
+                $company->company_unique_code = strtoupper($company->company_unique_code);
                 $company->setup_status = 2;
                 $company->save();
                 //commit changes
