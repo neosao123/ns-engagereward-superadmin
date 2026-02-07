@@ -419,7 +419,7 @@ class AuthController extends Controller
                 ], Response::HTTP_UNAUTHORIZED);
             }
 
-            $baseUrl = rtrim(env('ADMIN_API_URL'), '/') . '/' . strtolower($company->company_code) . '/api/' . env('API_VERSION');
+            $baseUrl = rtrim(env('ADMIN_API_URL'), '/') . '/' . strtolower($company->company_unique_code) . '/api/' . env('API_VERSION');
 
             return response()->json([
                 'status' => Response::HTTP_OK,
