@@ -357,7 +357,7 @@ class CompanyController extends Controller
             if ($records->count() > 0) {
                 foreach ($records as $row) {
 
-                    $loginUrl = env('ADMIN_API_URL') . strtolower($row->company_code);
+                    $loginUrl = env('ADMIN_API_URL') . strtolower($row->company_unique_code);
                     $formattedDate = \Carbon\Carbon::parse($row->created_at)->format('d-m-Y');
 
                     // Status badges
