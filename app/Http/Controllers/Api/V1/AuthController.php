@@ -62,7 +62,8 @@ class AuthController extends Controller
             }
 
             // Find company
-            $company = Company::where("company_code", $request->company_code)->first();
+            $companyCode = strtoupper($request->company_code);
+            $company = Company::where("company_code", $companyCode)->first();
             if (!$company) {
                 return response()->json(['status' => Response::HTTP_NOT_FOUND, 'message' => __('api.company_not_found'), 'data' => null], Response::HTTP_NOT_FOUND);
             }
@@ -78,7 +79,7 @@ class AuthController extends Controller
             $response = Http::asForm()->post($adminApiUrl, [
                 'email' => $request->email,
                 'password' => $request->password,
-                'company_code' => $request->company_code
+                'company_code' => $companyCode
             ]);
 
             // Handle failed responses
@@ -141,7 +142,8 @@ class AuthController extends Controller
             }
 
             // Find company
-            $company = Company::where("company_code", $request->company_code)->first();
+            $companyCode = strtoupper($request->company_code);
+            $company = Company::where("company_code", $companyCode)->first();
             if (!$company) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
@@ -164,7 +166,7 @@ class AuthController extends Controller
             // Call admin forget-password API
             $response = Http::asForm()->post($adminApiUrl, [
                 'email' => $request->email,
-                'company_code' => $request->company_code
+                'company_code' => $companyCode
             ]);
 
             // Handle failed responses gracefully
@@ -220,7 +222,8 @@ class AuthController extends Controller
             }
 
             // Find company
-            $company = Company::where("company_code", $request->invitation_code)->first();
+            $invitationCode = strtoupper($request->invitation_code);
+            $company = Company::where("company_code", $invitationCode)->first();
             if (!$company) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
@@ -237,7 +240,7 @@ class AuthController extends Controller
                 ], Response::HTTP_UNAUTHORIZED);
             }
 
-            $baseUrl = rtrim(env('ADMIN_API_URL'), '/') . '/' . strtolower($request->invitation_code) . '/api/' . env('API_VERSION');
+            $baseUrl = rtrim(env('ADMIN_API_URL'), '/') . '/' . strtolower($invitationCode) . '/api/' . env('API_VERSION');
             $adminApiUrl = $baseUrl . '/register';
 
             // Call admin forget-password API
@@ -245,7 +248,7 @@ class AuthController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone_country' => $request->phone_country,
-                'invitation_code' => $request->invitation_code,
+                'invitation_code' => $invitationCode,
                 'phone' => $request->phone,
                 'password' => $request->password,
             ]);
@@ -324,7 +327,8 @@ class AuthController extends Controller
             }
 
             // Find company
-            $company = Company::where('company_code', $request->company_code)->first();
+            $companyCode = strtoupper($request->company_code);
+            $company = Company::where('company_code', $companyCode)->first();
             if (!$company) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
@@ -342,7 +346,7 @@ class AuthController extends Controller
             }
 
             // Build tenant base URL
-            $baseUrl = rtrim(env('ADMIN_API_URL'), '/') . '/' . strtolower($request->company_code) . '/api/' . env('API_VERSION');
+            $baseUrl = rtrim(env('ADMIN_API_URL'), '/') . '/' . strtolower($companyCode) . '/api/' . env('API_VERSION');
             $adminApiUrl = $baseUrl . '/reset-password';
 
             // Call tenant reset-password API
@@ -350,7 +354,7 @@ class AuthController extends Controller
                 'token' => $request->token,
                 'password' => $request->password,
                 'password_confirmation' => $request->password_confirmation,
-                'company_code' => $request->company_code
+                'company_code' => $companyCode
             ]);
 
             // Handle failure
@@ -402,7 +406,8 @@ class AuthController extends Controller
             }
 
             // Find company
-            $company = Company::where("company_code", $request->company_code)->first();
+            $companyCode = strtoupper($request->company_code);
+            $company = Company::where("company_code", $companyCode)->first();
             if (!$company) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
