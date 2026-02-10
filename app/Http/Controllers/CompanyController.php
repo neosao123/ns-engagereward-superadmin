@@ -607,53 +607,38 @@ class CompanyController extends Controller
                 return response()->json(['codes' => []]);
             }
 
-            // Clean name: remove NON-LETTERS (no digits allowed)
-            $cleanName = preg_replace('/[^A-Za-z]/', '', $name);
-            $cleanName = strtoupper($cleanName);
-
-            // Ensure we have something to work with
+            // Cleanup name to get characters only
+            $cleanName = strtoupper(preg_replace('/[^A-Za-z]/', '', $name));
             if (empty($cleanName)) {
                 $cleanName = 'COMPANY';
             }
 
-            // Take first 6 chars
-            $baseCode = substr($cleanName, 0, 6);
-
-            // Pad if less than 6 with 'X' (letters only)
-            if (strlen($baseCode) < 6) {
-                $baseCode = str_pad($baseCode, 6, 'X', STR_PAD_RIGHT);
-            }
+            // Base code: First 6 characters
+            $baseCode = str_pad(substr($cleanName, 0, 6), 6, 'X', STR_PAD_RIGHT);
 
             $suggestions = [];
-            $maxSuggestions = 3;
-            $attempts = 0;
-            $maxAttempts = 100;
-
             $currentCode = $baseCode;
+            $attempts = 0;
 
-            while (count($suggestions) < $maxSuggestions && $attempts < $maxAttempts) {
-                $attempts++;
+            // Simple loop to find 3 unique available codes starting from the base
+            while (count($suggestions) < 3 && $attempts < 100) {
+                $isTaken = DB::table('companies')->where('company_code', $currentCode)->whereNull('deleted_at')->exists();
+                
+                if (!$isTaken && !in_array($currentCode, $suggestions)) {
+                    $suggestions[] = $currentCode;
+                }
 
-                // Ensure strict 6 chars length and purely alphabetic (sanity check)
-                if (strlen($currentCode) === 6 && ctype_alpha($currentCode)) {
-                    // Check uniqueness in DB and in current suggestions
-                    $isTaken = DB::table('companies')->where('company_code', $currentCode)->exists();
-                    $inSuggestions = in_array($currentCode, $suggestions);
-
-                    if (!$isTaken && !$inSuggestions) {
-                        $suggestions[] = $currentCode;
+                $currentCode++; // Increment (e.g., NEOSAO -> NEOSAP)
+                
+                // Keep it exactly 6 chars
+                if (strlen($currentCode) > 6) {
+                    $currentCode = substr($currentCode, 0, 6);
+                    // If stuck, break to avoid infinite loop
+                    if ($attempts > 50) {
+                         $currentCode = strtoupper(Str::random(6));
                     }
                 }
-
-                // Generates next alphabetic sequence (e.g., AAAAAA -> AAAAAB, ... ZZZZZZ -> AAAAAAA)
-                $currentCode++;
-
-                // If length exceeds 6 (e.g. ZZZZZZ -> AAAAAAA), allow logic to handle or break.
-                // Since user wants 6 chars, if we exceeded 6, we should stop or reset.
-                // Let's break to be safe as we only need 3 suggestions and it's unlikely to exhaust all 6-char combos starting from base.
-                if (strlen($currentCode) > 6) {
-                    break;
-                }
+                $attempts++;
             }
 
             return response()->json(['codes' => $suggestions]);

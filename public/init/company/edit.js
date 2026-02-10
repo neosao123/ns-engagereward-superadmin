@@ -36,16 +36,28 @@ $(function () {
         }
     }
 
+    $('#company_name').on('input', function() {
+        const val = $(this).val();
+        
+        // Immediately take first 6 characters (uppercase letters only)
+        const suggested = val.replace(/[^A-Za-z]/g, '').toUpperCase().substring(0, 6);
+        $('#company_code').val(suggested);
+        
+        // Clear suggestions when name changes (to hide previous list if any)
+        $('#code-suggestions').empty();
+    });
+
     let suggestionTimeout;
     $('#company_code').on('input', function() {
+        const companyName = $('#company_name').val();
         const val = $(this).val();
         clearTimeout(suggestionTimeout);
-        if (val.length > 0) {
+        if (companyName.length > 0) {
             suggestionTimeout = setTimeout(function() {
-                // Fetch to show list, but DO NOT autofill
-                fetchCodeSuggestions(val, false, true);
+                // Fetch to show list based on name, but DO NOT autofill
+                fetchCodeSuggestions(companyName, false, true);
             }, 500);
-        } else {
+        } else if (val.length === 0) {
              $('#code-suggestions').empty();
         }
     });
