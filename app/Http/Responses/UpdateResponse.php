@@ -196,7 +196,7 @@ class UpdateResponse implements Responsable
 							"website" => $basic_info['website'],
 							 "phone" => $e164Number,
 							"reg_number" => $basic_info['reg_number'],
-                            "company_logo" => $basic_info['company_logo'] ?? null,
+                            "company_logo" => !empty($basic_info['company_logo']) ? url('storage-bucket?path=' . $basic_info['company_logo']) : null,
 							"gst_number" => $basic_info['gst_number'],
 							"office_address_line_one" => $address_info['office_address_line_one'],
 							"office_address_line_two" => $address_info['office_address_line_two'],

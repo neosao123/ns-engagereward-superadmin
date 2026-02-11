@@ -661,9 +661,9 @@ class CompanyController extends Controller
     public function add_basic_info(Request $r)
     {
         // Generate company key
-        do {
+        /*do {
             $companyKey = strtoupper(Str::random(5));
-        } while (DB::table('companies')->where('company_key', $companyKey)->exists());
+        } while (DB::table('companies')->where('company_key', $companyKey)->exists());*/
         
         $rules = [
             'company_code' => [
@@ -815,7 +815,7 @@ class CompanyController extends Controller
 
             $data = [
                 'company_code' => $r->company_code,
-                'company_key' => $companyKey,
+                'company_key' => $r->company_code,
                 'company_unique_code' => $companyUniqueCode,
                 'company_name' => $r->company_name,
                 'legal_type' => $r->legal_type,
@@ -1761,6 +1761,7 @@ class CompanyController extends Controller
             $data = [
                 'company_id' => $company_id,
                 'company_code' => $r->company_code,
+                'company_key'=> $r->company_code,
                 'company_name' => $r->company_name,
                 'legal_type' => $r->legal_type,
                 'trade_name' => $r->trade_name,
