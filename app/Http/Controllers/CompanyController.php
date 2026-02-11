@@ -702,9 +702,9 @@ class CompanyController extends Controller
                         }
 
                         // Check uniqueness for this country
-                        //$formattedNumber = $phoneUtil->format($numberProto, \libphonenumber\PhoneNumberFormat::E164);
+                        $formattedNumber = $phoneUtil->format($numberProto, \libphonenumber\PhoneNumberFormat::E164);
                         $exists = DB::table('companies')
-                            ->where('phone', $r->phone)
+                            ->where('phone', $formattedNumber)
                             ->where('phone_country', $countryCode)
                             ->whereNull('deleted_at')
                             ->exists();
