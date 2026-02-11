@@ -305,7 +305,7 @@ class OnboardingController extends Controller
                 'billing_address_country_code' => $company->billing_address_country_code ?? "",
                 'billing_address_postal_code' => $company->billing_address_postal_code ?? "",
                 'account_status' => $company->account_status,
-                'company_logo' => $company->company_logo ?? "",
+                'company_logo' => $company->company_logo ? url('storage-bucket?path=' . $company->company_logo) : "",
                 'is_active' => 1,
                 'is_verified' => 1,
                 'created_at' => $company->created_at,

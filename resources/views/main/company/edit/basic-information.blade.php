@@ -16,7 +16,7 @@
             <div class="mb-1 col-lg-4 col-md-6 col-sm-12">
                 <label class=" form-label" for="company_code">{{__('index.company_code') ?? 'Company Code'}}<span class="text-danger">*</span></label>
                 <div class="">
-                  <input class="form-control" type="text" name="company_code" id="company_code" value="{{ $company->company_code }}" placeholder="Company Code" style="text-transform: uppercase" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '')">
+                  <input class="form-control" type="text" name="company_code" id="company_code" value="{{ $company->company_code }}" placeholder="Company Code" style="text-transform: uppercase" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '')" maxlength="6">
                   <small class="text-muted">Unique 6-character code (A-Z)</small>
                   <div id="code-suggestions" class="mt-1 d-flex gap-2"></div>
                 </div>
