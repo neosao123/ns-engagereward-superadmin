@@ -53,6 +53,7 @@ class UpdateResponse implements Responsable
             // Basic info
             "company_name" => $basic_info['company_name'],
             "company_code" => $basic_info['company_code'],
+            "company_key" => $basic_info['company_code'],
             "legal_type" => $basic_info['legal_type'],
             "trade_name" => $basic_info['trade_name'],
             "company_country_code" => $basic_info['company_country_code'],
