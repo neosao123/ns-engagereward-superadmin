@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Hash;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\NumberParseException;
 use App\Traits\ApiSecurityTrait;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
 
 class CompanyController extends Controller
 {
@@ -41,8 +43,10 @@ class CompanyController extends Controller
     {
         DB::beginTransaction();
         try {
+          
             $data = $this->validateApiRequest($request);
             if ($data instanceof JsonResponse) {
+               
                 return $data;
             }
 
@@ -76,12 +80,25 @@ class CompanyController extends Controller
 
 			$company->is_billing_address_same       = $data['is_billing_address_same'];
 
+            $path="";
+            if ($request->hasFile('company_logo')) {
+                // Delete old logo if it exists
+                if ($company->company_logo) {
+                    Storage::disk('public')->delete($company->company_logo);
+                }
+                
+                $file = $request->file('company_logo');
+                $path = Storage::disk('public')->putFileAs('company/logo', $file, "company-logo-" . time() . "." . $file->getClientOriginalExtension());
+                $company->company_logo = $path;
+            }
+
 			$company->save();
 			DB::commit();
             LogHelper::logSuccess('success', 'API => Company updated successfully.',  __FUNCTION__, basename(__FILE__), __LINE__, "");
             return response()->json([
                 'message' => "Company updated successfully",
-                'status'  => Response::HTTP_OK, 
+                'status'  => Response::HTTP_OK,
+                'logo_url' => $company->company_logo ? url('storage-bucket?path=' . $company->company_logo) : null,
             ]);
             
         } catch (\Exception $exception) {
