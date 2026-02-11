@@ -181,4 +181,67 @@ class CompanyController extends Controller
         }
     }
 
+
+
+         /**
+     * Update company logo
+     *
+     * This API validates the request, checks if the company exists,
+     * and updates the company logo.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update_company_logo(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $data = $this->validateApiRequest($request);
+            if ($data instanceof JsonResponse) {
+                return $data;
+            }
+
+            $company = Company::where("id",$data["company_id"])->first();
+
+            if (!$company) {
+                return response()->json([
+                    'status'  => Response::HTTP_UNAUTHORIZED,
+                    'message' => 'Company not found.'
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+
+            if ($company->company_logo) {
+                Storage::disk('public')->delete($company->company_logo);
+            }
+            $company->company_logo = NULL;
+            $company->save();
+
+            DB::commit();
+            LogHelper::logSuccess('success', 'API => Company logo updated successfully.',  __FUNCTION__, basename(__FILE__), __LINE__, "");
+            return response()->json([
+                'message' => "Company status updated successfully",
+                'status'  => Response::HTTP_OK,
+            ]);
+
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            LogHelper::logError(
+                'exception',
+                'Failed to update company logo.',
+                $exception->getMessage(),
+                __FUNCTION__,
+                basename(__FILE__),
+                __LINE__,
+                __FILE__,
+                ''
+            );
+
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => __('api.server_error'),
+                'error' => config('app.debug') ?  $exception->getMessage() : null
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
