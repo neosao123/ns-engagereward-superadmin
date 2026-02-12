@@ -417,7 +417,7 @@ class CompanyController extends Controller
 
                         if ($row->setup_status == 2) {
                             $action .= '<a class="dropdown-item btn-copy-url" data-url="' . $loginUrl . '" style="cursor:pointer;"><i class="fas fa-link me-2"></i>' . __('index.login_url') . '</a>';
-                            $cmCode = strtolower($row->company_code);
+                            $cmCode = strtolower($row->company_unique_code);
                            $baseUrl = rtrim(env('ADMIN_API_URL'), '/');
 
                             $url = $baseUrl . "/{$cmCode}/system-login"
