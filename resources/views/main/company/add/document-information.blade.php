@@ -61,7 +61,10 @@
             </div>
             <div class="col-6 text-end">
                 <div class="mb-0">
-                    <button type="button" id="documents_submit" class="btn btn-sm btn-primary">{{ __('index.submit') }}</button>
+                    <button type="button" id="documents_submit" class="btn btn-sm btn-primary">
+                        <span class="fas fa-spinner fa-spin d-none" id="documents_submit_spinner"></span>
+                        <span id="documents_submit_text">{{ __('index.submit') }}</span>
+                    </button>
                 </div>
             </div>
         </div>

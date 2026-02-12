@@ -1041,6 +1041,17 @@ $(function () {
 
     // Document form submission
     $("#documents_submit").on("click", function () {
+        var btn = $(this);
+        
+        // Check if already submitting to prevent double clicks
+        if (btn.data('is-submitting')) {
+            return false;
+        }
+
+        // Immediately disable and set flag
+        btn.prop("disabled", true);
+        btn.data('is-submitting', true);
+
         var formData = new FormData($("#document_form_add")[0]);
         var formUrl = baseUrl + "/company/add/document-info";
 
@@ -1056,12 +1067,19 @@ $(function () {
             processData: false,
             contentType: false,
             beforeSend: function () {
-                $("#documents_submit").prop("disabled", true);
+                btn.data('original-text', $("#documents_submit_text").text());
+                $("#documents_submit_spinner").removeClass("d-none");
+                $("#documents_submit_text").text("Submitting...");
             },
             success: function (response) {
                 if (response.hasOwnProperty("errors")) {
                     $("#document_form_add").addClass("was-invalid");
-
+                    
+                    // Re-enable on validation errors
+                    btn.prop("disabled", false);
+                    btn.data('is-submitting', false);
+                    $("#documents_submit_spinner").addClass("d-none");
+                    $("#documents_submit_text").text(btn.data('original-text'));
 
                     if (response.errors.documents) {
                         const errorContainer = $('<div class="text-danger mb-3 text-center"></div>')
@@ -1087,13 +1105,18 @@ $(function () {
                     }, 1000);
                 } else {
                     toast("Something went wrong.", "error");
+                    btn.prop("disabled", false);
+                    btn.data('is-submitting', false);
+                    $("#documents_submit_spinner").addClass("d-none");
+                    $("#documents_submit_text").text(btn.data('original-text'));
                 }
             },
             error: function (error) {
                 toast("An error occurred. Please try again.", "error");
-            },
-            complete: function () {
-                $("#documents_submit").removeAttr("disabled");
+                btn.prop("disabled", false);
+                btn.data('is-submitting', false);
+                $("#documents_submit_spinner").addClass("d-none");
+                $("#documents_submit_text").text(btn.data('original-text'));
             }
         });
     });
