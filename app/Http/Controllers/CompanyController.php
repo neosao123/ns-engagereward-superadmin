@@ -2806,7 +2806,9 @@ class CompanyController extends Controller
                 "status" => $request->status,
             ];
 
-            $this->makeSecurePostApiRequest(strtolower($request->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-update', $adminData)->throw();
+            $company = Company::where('id', $sub->company_id)->first();
+
+            $this->makeSecurePostApiRequest(strtolower($company->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-update', $adminData)->throw();
 
             //$this->makeSecurePostApiRequest('api/v1/subscription-plan-update', $adminData)->throw();
 
@@ -2874,6 +2876,8 @@ class CompanyController extends Controller
                 ->where('is_active', 1)
                 ->first();
 
+            $company = Company::where('id', $request->company_id)->first();
+
             if ($previousPlan) {
                 // Update locally
                 $previousPlan->update([
@@ -2888,7 +2892,7 @@ class CompanyController extends Controller
                     "is_active" => 0
                 ];
 
-                $this->makeSecurePostApiRequest(strtolower($request->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-update', $adminData)->throw();
+                $this->makeSecurePostApiRequest(strtolower($company->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-update', $adminData)->throw();
 
                 //$this->makeSecurePostApiRequest('api/v1/subscription-plan-update', $adminData)->throw();
             }
@@ -2919,7 +2923,7 @@ class CompanyController extends Controller
 
 
             //$this->makeSecurePostApiRequest($company->company_code.'/api/v1/subscription-plan-add', $subscription_plan)->throw();
-            $response = $this->makeSecurePostApiRequest(strtolower($request->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-add', $subscription_plan)->throw();
+            $response = $this->makeSecurePostApiRequest(strtolower($company->company_unique_code) . '/api/' . env('API_VERSION') . '/subscription-plan-add', $subscription_plan)->throw();
             $data = $response->json();
             $subscription_purchase_id = $data['id'] ?? null;
             $subscription_plan["subscription_purchase_id"] = $subscription_purchase_id;
