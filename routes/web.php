@@ -20,6 +20,8 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CronjobController;
 use App\Http\Controllers\PaymentSettingController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\SocialMedia\FacebookSettingController;
+
 
 use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
@@ -272,6 +274,16 @@ Route::group(['middleware' => ['PreventBack']], function () {
         * --------------------------------------------------------------------------------------------------- */
 		Route::get('/payment-setting', [PaymentSettingController::class, 'create']);
         Route::post('/payment-setting/store', [PaymentSettingController::class, 'store']);
+
+        /** --------------------------------------------------------------------------------------------------
+         * Facebook config
+        * --------------------------------------------------------------------------------------------------- */
+        Route::group(['prefix' => 'config'], function () {
+            Route::group(['prefix' => 'facebook'], function () {
+                Route::get('/', [FacebookSettingController::class, 'index']);
+                Route::post('/update-keys', [FacebookSettingController::class, 'updateAppKeys']);
+            });
+        });
 
 	 });
 
