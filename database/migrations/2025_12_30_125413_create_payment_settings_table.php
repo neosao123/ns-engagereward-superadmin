@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('live_client_id');
             $table->text('webhook_secret_key');
             $table->text('webhook_secret_live_key');
-            $table->text('payment_gateway')->default("stripe");
+            $table->string('payment_gateway')->default('stripe');
             $table->tinyInteger('is_active')->default(1);
             $table->tinyInteger('is_delete')->default(0);
             $table->timestamps();
