@@ -90,6 +90,13 @@ class PermissionGroupsTableSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now
             ],
+            [
+                'id' => 13,
+                'group_name' => 'MetaSetting',
+                'slug' => 'metasetting',
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
         ]);
     }
 }
