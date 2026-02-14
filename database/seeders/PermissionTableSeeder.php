@@ -57,6 +57,8 @@ class PermissionTableSeeder extends Seeder
             ['id' => 41, 'name' => 'Subscription.Delete', 'guard_name' => 'admin', 'group_id' => 10],
             ['id' => 42, 'name' => 'Subscription.View', 'guard_name' => 'admin', 'group_id' => 10],
             ['id' => 44, 'name' => 'PaymentSetting.Create', 'guard_name' => 'admin', 'group_id' => 11],
+            ['id=' => 45, 'name' => 'MetaSetting.Edit', 'guard_name' => 'admin', 'group_id' => 12],
+
         ];
 
         try {

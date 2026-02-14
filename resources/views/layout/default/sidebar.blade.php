@@ -117,7 +117,8 @@
                     </a>
                 </li>
 				@endif
-				 
+
+                @canany(['MetaSetting.Edit'])
                 <li class="nav-item">
                     <a class="nav-link dropdown-indicator" href="#settings" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="settings">
                         <div class="d-flex align-items-center">
@@ -127,15 +128,17 @@
                             <span class="nav-link-text ps-1"> {{ __('index.setting') }}</span>
                         </div>
                     </a>
-                 
+                     @haspermission('MetaSetting.Edit', 'admin')
                     <ul class="nav collapse" id="settings">
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('settings/meta') }}">
                                 <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Meta (Fb + Insta)</span></div>
                             </a>
-                        </li> 
+                        </li>
                     </ul>
+                     @endhaspermission
                 </li>
+                @endcanany
             </ul>
         </div>
     </div>
