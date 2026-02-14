@@ -32,7 +32,7 @@ class FacebookSettingController extends Controller
                 Auth::guard('admin')->user()->id ?? null
             );
 
-            return view('main.social-media-setting.facebook.index', compact('config', 'setting'));
+            return view('main.social-media-setting.meta.index', compact('config', 'setting'));
         } catch (\Exception $exception) {
             LogHelper::logError(
                 'exception',
