@@ -406,7 +406,7 @@ class OnboardingController extends Controller
                 if ($company->email != "") {
                     try{
                         $email = $company->email;
-                        $company_url = env('ADMIN_API_URL') . strtolower($company->company_code);
+                        $company_url = env('ADMIN_API_URL') . strtolower($company->company_unique_code);
                         $details = [
                             'title' => 'Mail from EngageReward',
                             'url' => $company_url,
