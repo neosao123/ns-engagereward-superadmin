@@ -1,9 +1,9 @@
 $(function () {
-	
+
     getDataTable("", "");
     function operations() {
         //delete user
-	
+
 		$("a.btn-delete").on("click", function () {
 			const id = $(this).data("id");
 
@@ -28,7 +28,7 @@ $(function () {
 									toast("Subscription plan deleted successfully.", "success");
 									getDataTable();
 								} else {
-									toast(response.error || "An error occurred while deleting the user.", "error");
+									toast(response.message || "An error occurred while deleting the subscription plan.", "error");
 								}
 							},
 							error: function (xhr) {
@@ -41,12 +41,12 @@ $(function () {
 						});
 					},
 					cancel: function () {
-						
+
 					}
 				}
 			});
        });
-		
+
     }
   //user list
     function getDataTable() {
@@ -66,7 +66,7 @@ $(function () {
                 url: baseUrl + "/subscription-plan/list",
                 type: "GET",
                 data: {
-                    
+
                 },
                 complete: function (response) {
                     operations();

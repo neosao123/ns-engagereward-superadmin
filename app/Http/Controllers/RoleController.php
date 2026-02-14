@@ -2,7 +2,7 @@
 
 /** --------------------------------------------------------------------------------
  * This controller manages all the role operations
- *   
+ *
  * @author     Neosao Services Pvt Ltd.
  *----------------------------------------------------------------------------------*/
 namespace App\Http\Controllers;
@@ -22,7 +22,7 @@ use Carbon\Carbon;
 use App\Helpers\LogHelper;
 class RoleController extends Controller
 {
-  
+
 	public function __construct()
     {
         // List & index
@@ -32,10 +32,10 @@ class RoleController extends Controller
 		$this->middleware('permission:User.Delete,admin')->only('destroy');
 
 	}
-	 
+
 	  /**
 	 * Display the role management index page
-	 * 
+	 *
 	 * Shows the main role configuration view and handles:
 	 * - Successful page loading with logging
 	 * - Error cases with appropriate logging and user feedback
@@ -45,7 +45,7 @@ class RoleController extends Controller
 	  public function index()
 	{
 		try {
-			
+
 			LogHelper::logSuccess(
 				'success',
 				'Role index page loaded successfully.',
@@ -59,7 +59,7 @@ class RoleController extends Controller
 			return view('main.configuration.role.index');
 
 		} catch (\Exception $exception) {
-			
+
 			LogHelper::logError(
 				'exception',
 				'An error occurred while loading the role index page.',
@@ -75,10 +75,10 @@ class RoleController extends Controller
 		}
 	}
 
-	
+
 	/**
 	 * Get paginated list of roles for DataTables
-	 * 
+	 *
 	 * Handles server-side processing for role management table with:
 	 * - Search functionality
 	 * - Pagination
@@ -88,7 +88,7 @@ class RoleController extends Controller
 	 * @param Request $r The incoming DataTables request
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	 
+
 	public function list(Request $r)
 	{
 		try {
@@ -135,7 +135,7 @@ class RoleController extends Controller
 			], 200);
 
 		} catch (\Exception $exception) {
-		
+
 			LogHelper::logError(
 				'exception',
 				'An error occurred while fetching the role list.',
@@ -153,10 +153,10 @@ class RoleController extends Controller
 		}
 	}
 
-	
+
 	/**
 	 * Create and store a new role
-	 * 
+	 *
 	 * Handles role creation with validation and logging:
 	 * - Validates role name format and uniqueness
 	 * - Creates role with admin guard
@@ -165,7 +165,7 @@ class RoleController extends Controller
 	 * @param Request $r The incoming request with role data
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-		 
+
 	public function store(Request $r)
 	{
 		try {
@@ -215,7 +215,7 @@ class RoleController extends Controller
 			], 200);
 
 		} catch (\Exception $ex) {
-			
+
 			LogHelper::logError(
 				'exception',
 				'An error occurred while saving the role.',
@@ -243,7 +243,7 @@ class RoleController extends Controller
 	 * @param Request $r The incoming request containing role ID
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	 
+
     public function edit(Request $r)
 	{
 		try {
@@ -251,7 +251,7 @@ class RoleController extends Controller
 			$role = Role::find($id);
 
 			if ($role) {
-			
+
 				LogHelper::logSuccess(
 					'success',
 					'Role data fetched successfully.',
@@ -274,7 +274,7 @@ class RoleController extends Controller
 			], 400);
 
 		} catch (\Exception $ex) {
-			
+
 			LogHelper::logError(
 				'exception',
 				'An error occurred while fetching role.',
@@ -291,7 +291,7 @@ class RoleController extends Controller
 			], 500);
 		}
 	}
-	
+
 	/**
 	 * Update existing role information
 	 *
@@ -336,7 +336,7 @@ class RoleController extends Controller
 				$role = Role::find($id);
 				$role->update($data);
 
-				
+
 				LogHelper::logSuccess(
 					'success',
 					'Role updated successfully.',
@@ -376,7 +376,7 @@ class RoleController extends Controller
 
     /**
 	 * Delete a role from the system
-	 * 
+	 *
 	 * Handles role deletion with safety checks:
 	 * - Verifies role exists
 	 * - Checks if role is assigned to any users (prevent deletion if in use)
@@ -390,7 +390,9 @@ class RoleController extends Controller
 	{
 		try {
 			$role = Role::find($id);
-			$users = User::where("role_id", $id)->count();
+			$users = User::where("role_id", $id)
+                     ->whereNull('deleted_at')
+                     ->count();
 
 			if ($users > 0) {
 				return response()->json([
