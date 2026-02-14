@@ -27,6 +27,7 @@ use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 use App\Helpers\LogHelper;
 use App\Models\SubscriptionPlanSocialMedia;
+use App\Models\SubscriptionPurchase;
 
 class SubscriptionPlanController extends Controller
 {
@@ -520,6 +521,16 @@ class SubscriptionPlanController extends Controller
             if (!$sub) {
                 return response()->json(['success' => false, 'message' => 'Subscription not found']);
             }
+
+            $subscriptions = SubscriptionPurchase::where("subscription_id", $id)
+                     ->count();
+
+			if ($subscriptions > 0) {
+				return response()->json([
+					'success' => false,
+					'message' => 'Unable to delete records. This subscription is currently assigned to one or more company.'
+				]);
+			}
 
             $sub->is_active = 0;
             $sub->deleted_at = now();
