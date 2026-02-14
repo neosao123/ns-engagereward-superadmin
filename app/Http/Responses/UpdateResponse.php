@@ -16,9 +16,10 @@ use libphonenumber\NumberParseException;
 
 use App\Traits\HandlesAdminApiRequests;
 use App\Traits\HandlesApiResponses;
+
 class UpdateResponse implements Responsable
 {
-	use HandlesAdminApiRequests,HandlesApiResponses;
+    use HandlesAdminApiRequests, HandlesApiResponses;
     protected $payload;
 
     public function __construct($payload)
@@ -38,15 +39,15 @@ class UpdateResponse implements Responsable
         if (!$company_id) {
             return response()->json(['status' => 400, 'msg' => "Missing company ID."], 400);
         }
-		$e164Number="";
-		if(!empty($basic_info['phone_country']) && !empty($basic_info['phone'])){
+        $e164Number = "";
+        if (!empty($basic_info['phone_country']) && !empty($basic_info['phone'])) {
             $phoneUtil = PhoneNumberUtil::getInstance();
             $numberProto = $phoneUtil->parse($basic_info['phone'], $basic_info['phone_country']);
 
             //$nationalNumber = $phoneUtil->format($numberProto, \libphonenumber\PhoneNumberFormat::NATIONAL);
             $e164Number = $phoneUtil->format($numberProto, \libphonenumber\PhoneNumberFormat::E164);
         }
-		//$digitsOnly = preg_replace('/\D/', '', $nationalNumber);
+        //$digitsOnly = preg_replace('/\D/', '', $nationalNumber);
         //$cleanNumber = ltrim($digitsOnly, '0'); // Remove leading zero
 
         $data = [
@@ -61,7 +62,7 @@ class UpdateResponse implements Responsable
             "email" => $basic_info['email'],
             //"password" => Hash::make($basic_info['password']),
             "phone" => $e164Number,
-			"phone_country"=>strtoupper($basic_info['phone_country']),
+            "phone_country" => strtoupper($basic_info['phone_country']),
             "website" => $basic_info['website'],
             "reg_number" => $basic_info['reg_number'],
             "gst_number" => $basic_info['gst_number'],
@@ -85,16 +86,16 @@ class UpdateResponse implements Responsable
 
         ];
 
-        if(!empty($basic_info['password'])){
+        if (!empty($basic_info['password'])) {
             $data["password"] = Hash::make($basic_info['password']);
         }
 
         DB::beginTransaction();
-       try {
+        try {
             // File uploads
 
 
-            if (!empty($basic_info["company_logo"]) && $basic_info["company_logo"]!=NULL) {
+            if (!empty($basic_info["company_logo"]) && $basic_info["company_logo"] != NULL) {
                 $data["company_logo"] = $basic_info["company_logo"];
             }
 
@@ -108,44 +109,44 @@ class UpdateResponse implements Responsable
 
 
             // Save Documents
-			// Handle Documents Update
-			foreach ($document_info as $document) {
+            // Handle Documents Update
+            foreach ($document_info as $document) {
 
-				if ($document['id'] === "#" || empty($document['id'])) {
-					// Create new document
-					CompanyDocument::create([
-						'company_id' => $company->id,
-						'document_type' => $document['type'] ?? null,
-						'document_number' => $document['number'] ?? null,
-						'document_file' => $document['file_path'] ?? null,
-						'is_active' => 1,
-						'created_at' => now(),
-						'updated_at' => now()
-					]);
-				} else {
-					// Update existing document
-					$existingDoc = CompanyDocument::find($document['id']);
+                if ($document['id'] === "#" || empty($document['id'])) {
+                    // Create new document
+                    CompanyDocument::create([
+                        'company_id' => $company->id,
+                        'document_type' => $document['type'] ?? null,
+                        'document_number' => $document['number'] ?? null,
+                        'document_file' => $document['file_path'] ?? null,
+                        'is_active' => 1,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                } else {
+                    // Update existing document
+                    $existingDoc = CompanyDocument::find($document['id']);
 
-					if ($existingDoc) {
-						$updateData = [
-							'document_type' => $document['type'] ?? $existingDoc->document_type,
-							'document_number' => $document['number'] ?? $existingDoc->document_number,
-							'updated_at' => now()
-						];
+                    if ($existingDoc) {
+                        $updateData = [
+                            'document_type' => $document['type'] ?? $existingDoc->document_type,
+                            'document_number' => $document['number'] ?? $existingDoc->document_number,
+                            'updated_at' => now()
+                        ];
 
-						// Handle file update if new file path exists
-						if (!empty($document['file_path']) && $document['file_path'] != $existingDoc->document_file) {
-							// Delete old file if exists
-							if ($existingDoc->document_file) {
-								Storage::disk('public')->delete($existingDoc->document_file);
-							}
-							$updateData['document_file'] = $document['file_path'];
-						}
+                        // Handle file update if new file path exists
+                        if (!empty($document['file_path']) && $document['file_path'] != $existingDoc->document_file) {
+                            // Delete old file if exists
+                            if ($existingDoc->document_file) {
+                                Storage::disk('public')->delete($existingDoc->document_file);
+                            }
+                            $updateData['document_file'] = $document['file_path'];
+                        }
 
-						$existingDoc->update($updateData);
-					}
-				}
-			}
+                        $existingDoc->update($updateData);
+                    }
+                }
+            }
 
             // Delete old social media links
             CompanySocialMediaSetting::where('company_id', $company->id)->delete();
@@ -160,7 +161,6 @@ class UpdateResponse implements Responsable
                             'social_media_app_id' => $appId,
                             'is_active' => 1,
                         ]);
-
                     }
                 }
             }
@@ -183,44 +183,44 @@ class UpdateResponse implements Responsable
                 Auth::guard('admin')->user()->id ?? null
             );
 
-			//sending data to admin side for update specific company
+            //sending data to admin side for update specific company
 
-			$adminData=[
-                            "company_code"=>$basic_info['company_code'],
-			                "company_name" => $basic_info['company_name'],
-							"legal_type" => $basic_info['legal_type'],
-							"trade_name" => $basic_info['trade_name'],
-							"company_country_code" => $basic_info['company_country_code'],
-							"description" => $basic_info['description'],
-							"email" => $basic_info['email'],
-							"phone_country"=>strtoupper($basic_info['phone_country']),
-							"website" => $basic_info['website'],
-							 "phone" => $e164Number,
-							"reg_number" => $basic_info['reg_number'],
-                            "company_logo" => !empty($basic_info['company_logo']) ? url('storage-bucket?path=' . $basic_info['company_logo']) : null,
-							"gst_number" => $basic_info['gst_number'],
-							"office_address_line_one" => $address_info['office_address_line_one'],
-							"office_address_line_two" => $address_info['office_address_line_two'],
-							"office_address_city" => $address_info['office_address_city'],
-							"office_address_province_state" => $address_info['office_address_province_state'],
-							"office_address_country_code" => $address_info['office_address_country_code'],
-							"office_address_postal_code" => $address_info['office_address_postal_code'],
-							"billing_address_line_one" => $address_info['billing_address_line_one'],
-							"billing_address_line_two" => $address_info['billing_address_line_two'],
-							"billing_address_city" => $address_info['billing_address_city'],
-							"billing_address_province_state" => $address_info['billing_address_province_state'],
-							"billing_address_country_code" => $address_info['billing_address_country_code'],
-							"billing_address_postal_code" => $address_info['billing_address_postal_code'],
-							"is_billing_address_same" => $address_info['is_billing_address_same'],
-							"app_info" => $social_info,
-			           ];
-			 if($company->company_code!="" && $company->setup_status==2){
-			   $this->makeSecurePostApiRequest(strtolower($company->company_unique_code).'/api/'.env('API_VERSION').'/company-update', $adminData)->throw();
-
+            $adminData = [
+                "company_code" => $basic_info['company_code'],
+                "company_name" => $basic_info['company_name'],
+                "legal_type" => $basic_info['legal_type'],
+                "trade_name" => $basic_info['trade_name'],
+                "company_country_code" => $basic_info['company_country_code'],
+                "description" => $basic_info['description'],
+                "email" => $basic_info['email'],
+                "phone_country" => strtoupper($basic_info['phone_country']),
+                "website" => $basic_info['website'],
+                "phone" => $e164Number,
+                "reg_number" => $basic_info['reg_number'],
+                "company_logo" => !empty($basic_info['company_logo']) ? url('storage-bucket?path=' . $basic_info['company_logo']) : null,
+                "gst_number" => $basic_info['gst_number'],
+                "office_address_line_one" => $address_info['office_address_line_one'],
+                "office_address_line_two" => $address_info['office_address_line_two'],
+                "office_address_city" => $address_info['office_address_city'],
+                "office_address_province_state" => $address_info['office_address_province_state'],
+                "office_address_country_code" => $address_info['office_address_country_code'],
+                "office_address_postal_code" => $address_info['office_address_postal_code'],
+                "billing_address_line_one" => $address_info['billing_address_line_one'],
+                "billing_address_line_two" => $address_info['billing_address_line_two'],
+                "billing_address_city" => $address_info['billing_address_city'],
+                "billing_address_province_state" => $address_info['billing_address_province_state'],
+                "billing_address_country_code" => $address_info['billing_address_country_code'],
+                "billing_address_postal_code" => $address_info['billing_address_postal_code'],
+                "is_billing_address_same" => $address_info['is_billing_address_same'],
+                "is_active" => $basic_info['is_active'] ?? 0,
+                "is_verified" => $basic_info['is_verified'] ?? 0,
+                "app_info" => $social_info,
+            ];
+            if ($company->company_code != "" && $company->setup_status == 2) {
+                $this->makeSecurePostApiRequest(strtolower($company->company_unique_code) . '/api/' . env('API_VERSION') . '/company-update', $adminData)->throw();
             }
-             return response()->json(['status' => 200, 'msg' => "Record updated successfully."], 200);
-
-        }  catch (RequestException $exception) {
+            return response()->json(['status' => 200, 'msg' => "Record updated successfully."], 200);
+        } catch (RequestException $exception) {
             DB::rollBack();
 
             LogHelper::logError('exception', 'API => ' . __('api.super_admin_error'), $exception->getMessage(), __FUNCTION__, basename(__FILE__), __LINE__, '');
@@ -242,5 +242,4 @@ class UpdateResponse implements Responsable
             return response()->json(['status' => 500, 'msg' => "Failed to update record.", 'error' => $e->getMessage()], 500);
         }
     }
-
 }
