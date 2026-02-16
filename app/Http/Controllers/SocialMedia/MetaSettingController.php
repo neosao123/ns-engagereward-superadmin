@@ -8,10 +8,13 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Helpers\LogHelper;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
-use DB;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 
-class FacebookSettingController extends Controller
+class MetaSettingController extends Controller
 {
     /**
      * Display the Facebook configuration page.
@@ -65,9 +68,12 @@ class FacebookSettingController extends Controller
             }
 
             $config = FacebookSetting::first() ?? new FacebookSetting();
-            $config->app_id = $request->app_id;
-            $config->app_secret = $request->app_secret;
+            $config->app_id = encryptData($request->app_id);
+            $config->app_secret = encryptData($request->app_secret);
             $config->save();
+
+            Config::set('services.facebook.client_id', decryptData($config->app_id));
+            Config::set('services.facebook.client_secret', decryptData($config->app_secret));
 
             LogHelper::logSuccess(
                 'success',
@@ -81,9 +87,10 @@ class FacebookSettingController extends Controller
 
             return redirect()->back()->with('status', 'Facebook App Keys updated successfully!');
         } catch (\Exception $exception) {
+            $message = 'An error occurred while updating keys as ' . $exception->getMessage();
             LogHelper::logError(
                 'exception',
-                'An error occurred while updating Facebook App Keys',
+                $message,
                 $exception->getMessage(),
                 __FUNCTION__,
                 basename(__FILE__),
@@ -92,7 +99,51 @@ class FacebookSettingController extends Controller
                 Auth::guard('admin')->user()->id ?? null
             );
 
-            return redirect()->back()->with('error', 'An error occurred while updating Facebook App Keys');
+            return redirect()->back()->with('error', $message);
         }
+    }
+
+    public function confirmPassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required'
+        ]);
+
+        $admin = Auth::guard('admin')->user();
+
+        if (!Hash::check($request->password, $admin->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect password'
+            ], 422);
+        }
+
+        // Store confirmation timestamp in session
+        Session::put('meta_access_confirmed_at', Carbon::now());
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    public function getKeys()
+    {
+        $confirmedAt = session('meta_access_confirmed_at');
+
+        if (!$confirmedAt || now()->diffInMinutes($confirmedAt) > 10) {
+            return response()->json([
+                'success' => false,
+                'expired' => true,
+                'message' => 'Password confirmation expired'
+            ], 403);
+        }
+
+        $config = FacebookSetting::first();
+
+        return response()->json([
+            'success' => true,
+            'app_id' => decryptData($config->app_id),
+            'app_secret' => decryptData($config->app_secret)
+        ]);
     }
 }

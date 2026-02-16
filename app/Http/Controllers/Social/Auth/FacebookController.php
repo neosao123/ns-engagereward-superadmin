@@ -75,7 +75,6 @@ class FacebookController extends Controller
 
             // 6. Redirect to the retrieved URL
             return redirect($returnUrl . '?auth_token=' . urlencode($tokenParams));
-
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             // Log the error for debugging: \Log::error($e->getMessage());

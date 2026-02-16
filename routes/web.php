@@ -19,7 +19,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\CronjobController;
 use App\Http\Controllers\PaymentSettingController;
 use App\Http\Controllers\WebhookController;
-use App\Http\Controllers\SocialMedia\FacebookSettingController;
+use App\Http\Controllers\SocialMedia\MetaSettingController;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
@@ -132,7 +132,6 @@ Route::group(['middleware' => ['PreventBack']], function () {
                 Route::get('/', [PermissionController::class, 'index'])->middleware(['permission:Permissions.List,admin']);
                 Route::post('/store', [PermissionController::class, 'store'])->middleware(['permission:Permissions.Create,admin']);
             });
-
         });
 
 
@@ -148,7 +147,6 @@ Route::group(['middleware' => ['PreventBack']], function () {
             Route::get('/fetch/users', [UserController::class, 'get_users']);
             Route::get('/delete/avatar/{id}', [UserController::class, 'delete_avatar']);
             Route::get('/block/{id}', [UserController::class, 'block_unblock_user']);
-
         });
 
         Route::resource('users', UserController::class);
@@ -270,13 +268,13 @@ Route::group(['middleware' => ['PreventBack']], function () {
          * --------------------------------------------------------------------------------------------------- */
         Route::group(['prefix' => 'settings'], function () {
             Route::group(['prefix' => 'meta'], function () {
-                Route::get('/', [FacebookSettingController::class, 'index']);
-                Route::post('/update-keys', [FacebookSettingController::class, 'updateAppKeys']);
+                Route::get('/', [MetaSettingController::class, 'index']);
+                Route::post('/update-keys', [MetaSettingController::class, 'updateAppKeys']);
+                Route::post('/confirm-password', [MetaSettingController::class, 'confirmPassword']);
+                Route::get('/get-keys', [MetaSettingController::class, 'getKeys']);
             });
         });
-
     });
-
 });
 
 Route::get('clear', function () {

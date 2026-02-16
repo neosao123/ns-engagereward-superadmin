@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('facebook_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('app_id')->nullable();
-            $table->string('app_secret')->nullable();
+            $table->text('app_id')->nullable();
+            $table->text('app_secret')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
