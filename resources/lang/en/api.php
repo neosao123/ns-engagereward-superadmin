@@ -75,4 +75,12 @@ return [
     'password_reset_success' => 'Password reset successfully.',
     'password_reset_error' => 'An error occurred while resetting the password.',
 
+    'password_reset_error' => 'An error occurred while resetting the password.',
+
+    // App Version Update
+    'setting_id_required' => 'Setting ID is required.',
+    'setting_id_integer' => 'Setting ID must be an integer.',
+    'setting_value_required' => 'Setting value is required.',
+    'is_update_compulsory_required' => 'Update compulsory flag is required.',
+    'current_version_update' => 'Current version updated successfully.',
 ];
