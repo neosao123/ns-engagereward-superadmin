@@ -84,16 +84,23 @@ class PermissionGroupsTableSeeder extends Seeder
                 'updated_at' => $now
             ],
             [
-                'id' => 12,
+                'id' => 11,
                 'group_name' => 'PaymentSetting',
                 'slug' => 'paymentsetting',
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
-                'id' => 13,
+                'id' => 12,
                 'group_name' => 'MetaSetting',
                 'slug' => 'metasetting',
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'id' => 13,
+                'group_name' => 'AppSetting',
+                'slug' => 'appsetting',
                 'created_at' => $now,
                 'updated_at' => $now
             ],
