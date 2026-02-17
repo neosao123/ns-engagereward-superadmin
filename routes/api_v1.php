@@ -21,6 +21,10 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/company-update', [CompanyController::class, 'update_company_details']);
 Route::post('/company-logo-delete', [CompanyController::class, 'update_company_logo']);
 
+//App version
+Route::get('/version/update', [AuthController::class, 'update_version']);
+Route::get('/version', [AuthController::class, 'get_version']);
+
 Route::get('/subscription-list', [SubscriptionController::class, 'list']);
 Route::post('/subscription-purchase', [SubscriptionController::class, 'subscription_purchase']);
 Route::post('/subscription-package/update/status', [SubscriptionController::class, 'update_purchase_package']);

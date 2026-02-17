@@ -19,6 +19,7 @@ use App\Models\SocialMediaApp;
 use App\Models\CompanySocialMediaSetting;
 use App\Http\Responses\StoreResponse;
 use App\Http\Responses\UpdateResponse;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Hash;
 
 use libphonenumber\PhoneNumberUtil;
@@ -440,4 +441,106 @@ class AuthController extends Controller
     }
 
     
+
+    //update version of app
+    public function update_version(Request $r)
+    {
+        try {
+            $input = $r->all();
+            $validator = Validator::make($input, [
+                // Setting Details
+                'setting_id' => 'required',
+                'setting_value' => 'required',
+                'is_update_compulsory' => 'required'
+            ], [
+
+                'setting_id.required' => __('api.setting_id_required'),
+                'setting_id.integer' => __('api.setting_id_integer'),
+                'setting_value.required' => __('api.setting_value_required'),
+                'is_update_compulsory.required' => __('api.is_update_compulsory_required'),
+            ]);
+
+            // Check if validation fails
+            if ($validator->fails()) {
+                // Return error response with validation message
+                $response = [
+                    "status" => 500,
+                    "message" => $validator->errors()->first()
+                ];
+                return response()->json($response, 200);
+            }
+            //get setting value
+            $result = Setting::where("id", $r->setting_id)->first();
+
+            if (!empty($result)) {
+                $result->setting_value = $r->setting_value;
+                $result->is_update_compulsory = $r->is_update_compulsory;
+                $result->save();
+
+                //success log
+                LogHelper::logSuccess('The app version updated successfully.', __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
+                //success response
+                return response()->json(["status" => 200, "message" => "Current version updated successfully."], 200);
+            }
+
+            //log error
+            LogHelper::logError('An error occurred while the  app version update.', 'Failed to update app version.',  __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, '');
+            return response()->json(["status" => 300, "message" => "Failed to update current version."], 200);
+        } catch (\Exception $e) {
+            // Log the error and return a generic error response
+            LogHelper::logError('An error occurred while app version update.', $e->getMessage(), __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => __('api.server_error'),
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    //get version
+
+    public function get_version(Request $r)
+    {
+        try {
+            $data = [];
+            //get ios version
+            $settingIOS = Setting::select("settings.*")
+                ->where("settings.id", "2")
+                ->first();
+            //get android version
+            $settingAndroid = Setting::select("settings.*")
+                ->where("settings.id", "1")
+                ->first();
+            if (!empty($settingAndroid)) {
+                $android = [
+                    "setting_id" => $settingAndroid->id,
+                    "setting_name" => $settingAndroid->setting_name,
+                    "setting_value" => $settingAndroid->setting_value,
+                    "is_update_compulsory" => $settingAndroid->is_update_compulsory
+                ];
+                $data["android"] = $android;
+            }
+            if (!empty($settingIOS)) {
+                $ios = [
+                    "setting_id" => $settingIOS->id,
+                    "setting_name" => $settingIOS->setting_name,
+                    "setting_value" => $settingIOS->setting_value,
+                    "is_update_compulsory" => $settingIOS->is_update_compulsory
+                ];
+                $data["ios"] = $ios;
+            }
+            //success log
+            LogHelper::logSuccess('the app version get successfully', __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
+            //success response
+
+            return response()->json(["status" => 200, "message" =>"Data fetched successfully.", "result" => $data], 200);
+        } catch (\Exception $e) {
+            // Log the error and return a generic error response
+            LogHelper::logError('An error occurred while get app version.', $e->getMessage(), __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
+            return response()->json([
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
+                'message' => __('api.server_error'),
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
