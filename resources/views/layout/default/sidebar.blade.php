@@ -90,6 +90,15 @@
                             </a>
                         </li>
 						 @endhaspermission
+                        @haspermission('AppSetting.Edit', 'admin')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/app-settings/list') }}" data-bs-toggle="" aria-expanded="false">
+                                <div class="d-flex align-items-center">
+                                    <span class="fas fa-cogs"></span><span class="nav-link-text ps-1">App Setting</span>
+                                </div>
+                            </a>
+                        </li>
+                        @endhaspermission
                     </ul>
                 </li>
                 @endcanany

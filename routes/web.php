@@ -22,6 +22,7 @@ use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\SocialMedia\MetaSettingController;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Http\Controllers\AppSettingController;
 
 
 /*
@@ -262,6 +263,17 @@ Route::group(['middleware' => ['PreventBack']], function () {
          * --------------------------------------------------------------------------------------------------- */
         Route::get('/payment-setting', [PaymentSettingController::class, 'create']);
         Route::post('/payment-setting/store', [PaymentSettingController::class, 'store']);
+
+        /** --------------------------------------------------------------------------------------------------
+         * App Settings
+         * --------------------------------------------------------------------------------------------------- */
+        Route::group(['prefix' => 'app-settings'], function () {
+            Route::get('/list', [AppSettingController::class, 'index']);
+            Route::get('/fetch-list', [AppSettingController::class, 'list']);
+            Route::get('/edit/{id}', [AppSettingController::class, 'edit']);
+            Route::post('/update/{id}', [AppSettingController::class, 'update']);
+        });
+
 
         /** --------------------------------------------------------------------------------------------------
          * Facebook config

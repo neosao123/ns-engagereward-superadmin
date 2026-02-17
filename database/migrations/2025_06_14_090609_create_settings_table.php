@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('logo_image')->nullable();
-            $table->string('contact_email')->nullable();
-            $table->string('contact_phone')->nullable();
-            $table->string('support_email')->nullable();
-            $table->string('support_contact')->nullable();
-             $table->boolean('is_active')->default(true);
+            $table->string('setting_name')->nullable();
+            $table->string('setting_value')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_update_compulsory')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
