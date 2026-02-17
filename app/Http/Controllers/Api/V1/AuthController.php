@@ -532,7 +532,7 @@ class AuthController extends Controller
             LogHelper::logSuccess('the app version get successfully', __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
             //success response
 
-            return response()->json(["status" => 200, "message" =>"Data fetched successfully.", "result" => $data], 200);
+            return response()->json(["status" => 200, "message" => __('api.current_version_update'), "result" => $data], 200);
         } catch (\Exception $e) {
             // Log the error and return a generic error response
             LogHelper::logError('An error occurred while get app version.', $e->getMessage(), __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
