@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Social\Auth\FacebookController;
+use App\Http\Controllers\Social\Auth\InstagramController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -304,9 +305,15 @@ Route::post('/payment/callback', [WebhookController::class, 'stripewebhook']);
 
 /** facebook auth */
 Route::get('/auth/proxy/redirect', [FacebookController::class, 'redirect'])->name('fb.proxy.redirect');
+
 Route::get('social/auth/facebook/callback', [FacebookController::class, 'callback']);
 Route::get('social/auth/facebook/de-authorize', [FacebookController::class, 'deauthorize']);
 Route::get('social/auth/facebook/data-delete', [FacebookController::class, 'data_delete']);
+
+Route::get('/auth/proxy/instagram/redirect',                    [InstagramController::class, 'redirect'])->name('ig.proxy.redirect');
+Route::get('social/auth/instagram/callback',          [InstagramController::class, 'callback']);
+Route::get('social/auth/instagram/de-authorize',      [InstagramController::class, 'deauthorize']);
+Route::post('social/auth/instagram/data-delete',      [InstagramController::class, 'data_delete']);
 
 /*Route::fallback(function (){
     return view('unauthorize');
