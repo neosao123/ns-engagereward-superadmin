@@ -496,12 +496,12 @@ class AuthController extends Controller
                 //success log
                 LogHelper::logSuccess('The app version updated successfully.', __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
                 //success response
-                return response()->json(["status" => 200, "message" => __('api.version_updated')], 200);
+                return response()->json(["status" => 200, "message" => "Current version updated successfully."], 200);
             }
 
             //log error
             LogHelper::logError('An error occurred while the  app version update.', 'Failed to update app version.',  __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, '');
-            return response()->json(["status" => 300, "message" => __('api.version_update_failed')], 200);
+            return response()->json(["status" => 300, "message" => "Failed to update current version."], 200);
         } catch (\Exception $e) {
             // Log the error and return a generic error response
             LogHelper::logError('An error occurred while app version update.', $e->getMessage(), __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
