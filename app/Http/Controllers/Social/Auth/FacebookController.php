@@ -11,7 +11,7 @@ use Laravel\Socialite\Facades\Socialite;
 
 
 class FacebookController extends Controller
-{
+{ 
     public function redirect(Request $request)
     {
         $returnUrl = $request->query('return_url');
@@ -95,7 +95,7 @@ class FacebookController extends Controller
             'status' => 'success',
             'message' => 'Deauthorized successfully',
         ], 200);
-    }
+    } 
 
     public function data_delete(Request $request)
     {
