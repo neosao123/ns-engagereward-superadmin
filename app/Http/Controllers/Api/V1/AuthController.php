@@ -404,7 +404,9 @@ class AuthController extends Controller
 
             // Find company
             $companyCode = strtoupper($request->company_code);
-            $company = Company::where("company_code", $companyCode)->first();
+            $company = Company::where("company_code", $companyCode)
+                      ->whereNull('deleted_at')
+                      ->first();
             if (!$company) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
@@ -417,6 +419,20 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => Response::HTTP_UNAUTHORIZED,
                     'message' => __('api.company_suspended'),
+                    'data' => null
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+            if ($company->is_active == "0") {
+                return response()->json([
+                    'status' => Response::HTTP_UNAUTHORIZED,
+                    'message' => __('api.company_inactive'),
+                    'data' => null
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+            if ($company->is_block == 1) {
+                return response()->json([
+                    'status' => Response::HTTP_UNAUTHORIZED,
+                    'message' => __('api.company_blocked'),
                     'data' => null
                 ], Response::HTTP_UNAUTHORIZED);
             }
@@ -480,12 +496,12 @@ class AuthController extends Controller
                 //success log
                 LogHelper::logSuccess('The app version updated successfully.', __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");
                 //success response
-                return response()->json(["status" => 200, "message" => "Current version updated successfully."], 200);
+                return response()->json(["status" => 200, "message" => __('api.version_updated')], 200);
             }
 
             //log error
             LogHelper::logError('An error occurred while the  app version update.', 'Failed to update app version.',  __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, '');
-            return response()->json(["status" => 300, "message" => "Failed to update current version."], 200);
+            return response()->json(["status" => 300, "message" => __('api.version_update_failed')], 200);
         } catch (\Exception $e) {
             // Log the error and return a generic error response
             LogHelper::logError('An error occurred while app version update.', $e->getMessage(), __FUNCTION__, basename(__FILE__), __LINE__, __FILE__, "");

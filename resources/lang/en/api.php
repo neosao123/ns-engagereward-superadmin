@@ -84,4 +84,13 @@ return [
     'is_update_compulsory_required' => 'Update compulsory flag is required.',
     'current_version_update'=>'Your current version is out of date. Please update now to continue using  latest features and improvements.',
 
+    'company_code_string' => 'Company code must be a string.',
+    'email_required' => 'Email is required.',
+    'email_invalid' => 'Email is invalid.',
+    'email_max' => 'Email must not be greater than 255 characters.',
+    'company_inactive' => 'Company is inactive.',
+    'company_blocked' => 'Company is blocked.',
+    'company_verified' => 'Company verified successfully.',
+    'version_updated' => 'Current version updated successfully.',
+    'version_update_failed' => 'Failed to update current version.',
 ];
