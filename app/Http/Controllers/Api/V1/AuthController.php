@@ -404,7 +404,9 @@ class AuthController extends Controller
 
             // Find company
             $companyCode = strtoupper($request->company_code);
-            $company = Company::where("company_code", $companyCode)->first();
+            $company = Company::where("company_code", $companyCode)
+                      ->whereNull('deleted_at')
+                      ->first();
             if (!$company) {
                 return response()->json([
                     'status' => Response::HTTP_NOT_FOUND,
@@ -417,6 +419,20 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => Response::HTTP_UNAUTHORIZED,
                     'message' => __('api.company_suspended'),
+                    'data' => null
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+            if ($company->is_active == "0") {
+                return response()->json([
+                    'status' => Response::HTTP_UNAUTHORIZED,
+                    'message' => __('api.company_inactive'),
+                    'data' => null
+                ], Response::HTTP_UNAUTHORIZED);
+            }
+            if ($company->is_block == 1) {
+                return response()->json([
+                    'status' => Response::HTTP_UNAUTHORIZED,
+                    'message' => __('api.company_blocked'),
                     'data' => null
                 ], Response::HTTP_UNAUTHORIZED);
             }
