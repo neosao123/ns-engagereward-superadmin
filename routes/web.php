@@ -310,8 +310,10 @@ Route::get('social/auth/facebook/callback', [FacebookController::class, 'callbac
 Route::get('social/auth/facebook/de-authorize', [FacebookController::class, 'deauthorize']);
 Route::get('social/auth/facebook/data-delete', [FacebookController::class, 'data_delete']);
 
-Route::get('/auth/proxy/instagram/redirect',                    [InstagramController::class, 'redirect'])->name('ig.proxy.redirect');
-Route::get('social/auth/instagram/callback',          [InstagramController::class, 'callback']);
+Route::prefix('auth/proxy')->group(function () {
+    Route::get('/instagram/redirect', [InstagramController::class, 'redirect']);
+    Route::get('/instagram/callback', [InstagramController::class, 'callback']);
+});
 Route::get('social/auth/instagram/de-authorize',      [InstagramController::class, 'deauthorize']);
 Route::post('social/auth/instagram/data-delete',      [InstagramController::class, 'data_delete']);
 
