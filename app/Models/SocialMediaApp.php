@@ -12,6 +12,7 @@ class SocialMediaApp extends Model
 	protected $fillable = [
 		'app_name',
 		'app_icon',
+		'social_media_operation',
 		'is_active',
 		'created_at',
 		'updated_at',

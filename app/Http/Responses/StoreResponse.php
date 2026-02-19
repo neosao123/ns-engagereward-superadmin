@@ -13,6 +13,7 @@ use App\Models\CompanySocialMediaSetting;
 use App\Models\Subscription;
 use App\Models\SubscriptionPurchase;
 use App\Models\CompanyDocument;
+use App\Models\SocialMediaApp;
 use Illuminate\Support\Facades\Hash;
 // Helper
 use App\Helpers\LogHelper;
@@ -146,9 +147,11 @@ class StoreResponse implements Responsable
 
 				foreach ($socialInfo as $appId => $appData) {
 					if ($appData['enabled'] ?? false) {
+						$socialApp = SocialMediaApp::find($appId);
 						CompanySocialMediaSetting::create([
 							'company_id' => $company->id,
 							'social_media_app_id' => $appId,
+							'social_media_operation' => $socialApp ? $socialApp->social_media_operation : null,
 							'is_active' => 1
 						]);
 					}
