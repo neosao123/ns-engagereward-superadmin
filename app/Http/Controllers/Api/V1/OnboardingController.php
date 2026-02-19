@@ -263,9 +263,9 @@ class OnboardingController extends Controller
             $company = Company::where('id', $companyId)->first();
             $database = CompanyDatabase::where('company_id', $companyId)->first();
 
-            $socialDetails = CompanySocialMediaSetting::where('company_id', $companyId)->pluck('social_media_app_id')->toArray();
-
-            $socialDetails = $socialDetails ?? [];
+            $socialSettings = CompanySocialMediaSetting::where('company_id', $companyId)->get(['social_media_app_id', 'social_media_operation']);
+            $socialAppIds = $socialSettings->pluck('social_media_app_id')->toArray();
+            $socialOperations = $socialSettings->pluck('social_media_operation', 'social_media_app_id')->toArray();
 
             $subscriptionPurchase = SubscriptionPurchase::where('company_id', $companyId)->first();
 
@@ -316,7 +316,8 @@ class OnboardingController extends Controller
                 'reason' => $company->reason ?? "",
                 'phone_country' => $company->phone_country ?? "",
                 //social media aaps ids
-                'social_media_app_ids' => $socialDetails,
+                'social_media_app_ids' => $socialAppIds,
+                'social_media_operations' => $socialOperations,
                 //subscription details
                 'subscription_id' => $subscriptionPurchase->subscription_id ?? '',
                 'subscription_title' => $subscriptionPurchase->subscription_title ?? '',

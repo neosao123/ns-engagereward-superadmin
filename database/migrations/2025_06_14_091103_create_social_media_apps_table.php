@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('app_name')->nullable();
             $table->longText('app_logo')->nullable();
+            $table->longText('social_media_operation')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

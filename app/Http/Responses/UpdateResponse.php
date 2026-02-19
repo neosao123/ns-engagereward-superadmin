@@ -10,6 +10,7 @@ use Illuminate\Contracts\Support\Responsable;
 use App\Models\Company;
 use App\Models\CompanyDocument;
 use App\Models\CompanySocialMediaSetting;
+use App\Models\SocialMediaApp;
 use App\Helpers\LogHelper;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\NumberParseException;
@@ -156,9 +157,11 @@ class UpdateResponse implements Responsable
                 $socialInfo = $r->session()->get('social_info');
                 foreach ($socialInfo as $appId => $appData) {
                     if ($appData['enabled'] ?? false) {
+                        $socialApp = SocialMediaApp::find($appId);
                         CompanySocialMediaSetting::create([
                             'company_id' => $company->id,
                             'social_media_app_id' => $appId,
+                            'social_media_operation' => $socialApp ? $socialApp->social_media_operation : null,
                             'is_active' => 1,
                         ]);
                     }

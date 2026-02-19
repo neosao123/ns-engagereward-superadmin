@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 			$table->unsignedBigInteger('company_id');
 			$table->unsignedBigInteger('social_media_app_id');
-           
+            $table->longText('social_media_operation')->nullable();           
             $table->longText('social_media_page_link')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

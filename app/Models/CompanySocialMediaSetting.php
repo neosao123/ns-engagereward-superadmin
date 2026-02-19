@@ -13,6 +13,7 @@ class CompanySocialMediaSetting extends Model
 		'company_id',
 		'social_media_app_id',
 		'social_media_page_link',
+		'social_media_operation',
 		'is_active',
 		'created_at',
 		'updated_at',
