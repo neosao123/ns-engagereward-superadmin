@@ -9,5 +9,7 @@ return [
     'developer_app' => 'Developer App',
     'meta_app_settings' => 'Meta App Settings',
     'meta_app_keys' => 'Meta App Keys',
-    'meta_config' => 'Meta (Facebook & Instagram)'
+    'meta_config' => 'Meta (Facebook & Instagram)',
+    'instagram_config' => 'Instagram Configuration',
+    'instagram_app_keys' => 'Instagram App Keys',
 ];

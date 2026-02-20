@@ -21,6 +21,7 @@ use App\Http\Controllers\CronjobController;
 use App\Http\Controllers\PaymentSettingController;
 use App\Http\Controllers\WebhookController;
 use App\Http\Controllers\SocialMedia\MetaSettingController;
+use App\Http\Controllers\SocialMedia\InstagramSettingController;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Http\Controllers\AppSettingController;
@@ -280,13 +281,20 @@ Route::group(['middleware' => ['PreventBack']], function () {
          * Facebook config
          * --------------------------------------------------------------------------------------------------- */
         Route::group(['prefix' => 'settings'], function () {
-            Route::group(['prefix' => 'meta'], function () {
-                Route::get('/', [MetaSettingController::class, 'index']);
-                Route::post('/update-keys', [MetaSettingController::class, 'updateAppKeys']);
-                Route::post('/confirm-password', [MetaSettingController::class, 'confirmPassword']);
-                Route::get('/get-keys', [MetaSettingController::class, 'getKeys']);
+                Route::group(['prefix' => 'meta'], function () {
+                    Route::get('/', [MetaSettingController::class, 'index']);
+                    Route::post('/update-keys', [MetaSettingController::class, 'updateAppKeys']);
+                    Route::post('/confirm-password', [MetaSettingController::class, 'confirmPassword']);
+                    Route::get('/get-keys', [MetaSettingController::class, 'getKeys']);
+                });
+
+                Route::group(['prefix' => 'instagram'], function () {
+                    Route::get('/', [InstagramSettingController::class, 'index']);
+                    Route::post('/update-keys', [InstagramSettingController::class, 'updateAppKeys']);
+                    Route::post('/confirm-password', [InstagramSettingController::class, 'confirmPassword']);
+                    Route::get('/get-keys', [InstagramSettingController::class, 'getKeys']);
+                });
             });
-        });
     });
 });
 
