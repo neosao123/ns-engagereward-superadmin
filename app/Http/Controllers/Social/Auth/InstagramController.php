@@ -3,16 +3,35 @@
 namespace App\Http\Controllers\Social\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\SocialMedia\InstagramSetting;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class InstagramController extends Controller
 {
+    private function getInstagramConfig()
+    {
+        $setting = InstagramSetting::first();
+        if ($setting) {
+            return [
+                'app_id' => decryptData($setting->app_id),
+                'app_secret' => decryptData($setting->app_secret)
+            ];
+        }
+        return null;
+    }
+
     public function redirect(Request $request)
     {
+        $config = $this->getInstagramConfig();
+        if (!$config) {
+             return response('Instagram API keys not configured.', 400);
+        }
+
         $returnUrl = $request->query('return_url');
 
         // 1. Generate a unique session ID
@@ -25,7 +44,7 @@ class InstagramController extends Controller
 
         // 3. Build Instagram OAuth URL
         $params = http_build_query([
-            'client_id'     => env('IG_APP_ID'),
+            'client_id'     => $config['app_id'],
             'redirect_uri'  => env('IG_REDIRECT_URI'),
             'response_type' => 'code',
             'scope'         => implode(',', [
@@ -42,6 +61,14 @@ class InstagramController extends Controller
 
     public function callback(Request $request)
     {
+        $config = $this->getInstagramConfig();
+        if (!$config) {
+            return response('Instagram API keys not configured.', 400);
+        }
+
+        $appId = $config['app_id'];
+        $appSecret = $config['app_secret'];
+
         try {
             // 1. Get session ID from state
             $sessionId = $request->input('state');
@@ -76,8 +103,8 @@ class InstagramController extends Controller
 
            
             $shortTokenResponse = Http::asForm()->post('https://api.instagram.com/oauth/access_token', [
-                'client_id'     => env('IG_APP_ID'),
-                'client_secret' => env('IG_APP_SECRET'),
+                'client_id'     => $appId,
+                'client_secret' => $appSecret,
                 'grant_type'    => 'authorization_code',
                 'redirect_uri'  => env('IG_REDIRECT_URI'),
                 'code'          => $code,
@@ -104,7 +131,7 @@ class InstagramController extends Controller
             // GET https://graph.instagram.com/access_token
             $longTokenResponse = Http::get('https://graph.instagram.com/access_token', [
                 'grant_type'    => 'ig_exchange_token',
-                'client_secret' => env('IG_APP_SECRET'),
+                'client_secret' => $appSecret,
                 'access_token'  => $shortLivedToken,
             ]);
 

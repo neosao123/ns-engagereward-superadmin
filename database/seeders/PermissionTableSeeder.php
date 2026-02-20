@@ -59,6 +59,7 @@ class PermissionTableSeeder extends Seeder
             ['id' => 44, 'name' => 'PaymentSetting.Create', 'guard_name' => 'admin', 'group_id' => 11],
             ['id=' => 45, 'name' => 'MetaSetting.Edit', 'guard_name' => 'admin', 'group_id' => 12],
             ['id=' => 46, 'name' => 'AppSetting.Edit', 'guard_name' => 'admin', 'group_id' => 13],
+            ['id=' => 47, 'name' => 'InstagramSetting.Edit', 'guard_name' => 'admin', 'group_id' => 14],
 
         ];
 

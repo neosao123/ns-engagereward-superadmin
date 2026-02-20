@@ -104,6 +104,13 @@ class PermissionGroupsTableSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now
             ],
+            [
+                'id' => 14,
+                'group_name' => 'InstagramSetting',
+                'slug' => 'instagramsetting',
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
         ]);
     }
 }
