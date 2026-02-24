@@ -61,6 +61,7 @@ class MetaSettingController extends Controller
             $validator = Validator::make($request->all(), [
                 'app_id' => 'required|string',
                 'app_secret' => 'required|string',
+                'callback_url' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -70,6 +71,7 @@ class MetaSettingController extends Controller
             $config = FacebookSetting::first() ?? new FacebookSetting();
             $config->app_id = encryptData($request->app_id);
             $config->app_secret = encryptData($request->app_secret);
+            $config->callback_url = $request->callback_url;
             $config->save();
 
             Config::set('services.facebook.client_id', decryptData($config->app_id));
@@ -143,7 +145,8 @@ class MetaSettingController extends Controller
         return response()->json([
             'success' => true,
             'app_id' => decryptData($config->app_id),
-            'app_secret' => decryptData($config->app_secret)
+            'app_secret' => decryptData($config->app_secret),
+            'callback_url' => $config->callback_url ?? env('APP_URL') . 'social/auth/facebook/callback'
         ]);
     }
 }
