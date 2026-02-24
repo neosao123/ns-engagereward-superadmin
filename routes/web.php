@@ -313,7 +313,6 @@ Route::post('/payment/callback', [WebhookController::class, 'stripewebhook']);
 
 /** facebook auth */
 Route::get('/auth/proxy/redirect', [FacebookController::class, 'redirect'])->name('fb.proxy.redirect');
-
 Route::get('social/auth/facebook/callback', [FacebookController::class, 'callback']);
 Route::get('social/auth/facebook/de-authorize', [FacebookController::class, 'deauthorize']);
 Route::get('social/auth/facebook/data-delete', [FacebookController::class, 'data_delete']);
@@ -322,7 +321,7 @@ Route::get('social/auth/facebook/data-delete', [FacebookController::class, 'data
 
 // Instagram Proxy Routes
 Route::get('auth/proxy/instagram/redirect',   [InstagramController::class, 'redirect']);
-Route::get('social/auth/instagram/callback',  [InstagramController::class, 'callback']); // ✅ हाच URL ठेवा
+Route::get('social/auth/instagram/callback',  [InstagramController::class, 'callback']); 
 Route::get('social/auth/instagram/de-authorize', [InstagramController::class, 'deauthorize']);
 Route::post('social/auth/instagram/data-delete', [InstagramController::class, 'data_delete']);
 
