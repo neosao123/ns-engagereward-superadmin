@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('app_id')->nullable();
             $table->text('app_secret')->nullable();
+            $table->text('callback_url')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

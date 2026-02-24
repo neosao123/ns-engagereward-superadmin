@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\V1\SubscriptionController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\ConfigDetailController;
+
+Route::get('/config-details', [ConfigDetailController::class, 'config_details']);
+
 Route::post('/book-company-demo',[BookdemoController::class, 'book_company_demo']);
 Route::get('/payment-setting', [PaymentController::class, 'paymentSetting']);
 Route::post('/login', [AuthController::class, 'login']);

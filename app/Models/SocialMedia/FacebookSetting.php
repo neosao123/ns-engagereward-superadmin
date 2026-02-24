@@ -15,6 +15,7 @@ class FacebookSetting extends Model
     protected $fillable = [
         'app_id',
         'app_secret',
+        'callback_url',
         'is_active'
     ];
 }

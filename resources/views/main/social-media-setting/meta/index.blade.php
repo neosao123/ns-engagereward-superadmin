@@ -72,6 +72,15 @@
                             <span id="app-secret-display" class="form-control">****************</span>
                         </div>
                     </div>
+                    <div class="mb-2">
+                        <div>Callback URL</div>
+                        <div class="input-group">
+                            <input type="text" id="callback-url-display" readonly class="form-control bg-light" value="*******************">
+                            <button class="btn btn-outline-secondary btn-sm btn-cpy-url" type="button" title="Copy Callback URL">
+                                <i class="far fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-footer text-end">
                     <button class="btn btn-outline-secondary btn-sm btn-show-hidden" title="Show App Keys">
@@ -96,6 +105,15 @@
                             <label for="app_secret">App Secret</label>
                             <input type="password" id="app_secret" name="app_secret" class="form-control" value=""
                                 required />
+                        </div>
+                        <div class="mb-2">
+                            <label for="callback_url">Callback URL</label>
+                            <div class="input-group">
+                                <input type="text" id="callback_url" name="callback_url" class="form-control" value="{{ $config->callback_url ?? env('APP_URL') . 'social/auth/facebook/callback' }}" required />
+                                <button class="btn btn-outline-secondary btn-sm btn-cpy-url-form" type="button" title="Copy Callback URL">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer text-end">
@@ -152,6 +170,7 @@
                 metaAccessTimeout = setTimeout(function() {
                     $('#app-id-display').text('*******************');
                     $('#app-secret-display').text('*******************');
+                    $('#callback-url-display').val('*******************');
                     $('.btn-show-hidden').removeAttr('disabled');
                 }, 20000); // 20 seconds
             }
@@ -210,6 +229,7 @@
                         if (response.success) {
                             $('#app-id-display').text(response.app_id);
                             $('#app-secret-display').text(response.app_secret);
+                            $('#callback-url-display').val(response.callback_url);
                             startMetaAccessTimer();
                         }
                     },
@@ -227,6 +247,35 @@
                 input.select();
                 document.execCommand("copy");
                 alert("Copied to clipboard: " + input.val());
+            });
+
+            $('.btn-cpy-url').on('click', function() {
+                var text = $(this).siblings('input').val();
+                
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        alert("Copied to clipboard!");
+                    });
+                } else {
+                    var input = $(this).siblings('input');
+                    input.select();
+                    document.execCommand("copy");
+                    alert("Copied to clipboard!");
+                }
+            });
+            $('.btn-cpy-url-form').on('click', function() {
+                var text = $(this).siblings('input').val();
+                
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        alert("Copied to clipboard!");
+                    });
+                } else {
+                    var input = $(this).siblings('input');
+                    input.select();
+                    document.execCommand("copy");
+                    alert("Copied to clipboard!");
+                }
             });
         });
     </script>

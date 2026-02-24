@@ -61,6 +61,7 @@ class InstagramSettingController extends Controller
             $validator = Validator::make($request->all(), [
                 'app_id' => 'required|string',
                 'app_secret' => 'required|string',
+                'callback_url' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
@@ -70,6 +71,7 @@ class InstagramSettingController extends Controller
             $config = InstagramSetting::first() ?? new InstagramSetting();
             $config->app_id = encryptData($request->app_id);
             $config->app_secret = encryptData($request->app_secret);
+            $config->callback_url = $request->callback_url;
             $config->save();
 
             // Note: These might need to match what's used in InstagramController (Auth)
@@ -145,14 +147,16 @@ class InstagramSettingController extends Controller
             return response()->json([
                 'success' => true,
                 'app_id' => 'Not Set',
-                'app_secret' => 'Not Set'
+                'app_secret' => 'Not Set',
+                'callback_url' => 'Not Set'
             ]);
         }
 
         return response()->json([
             'success' => true,
             'app_id' => decryptData($config->app_id) ?? 'Decryption Failed',
-            'app_secret' => decryptData($config->app_secret) ?? 'Decryption Failed'
+            'app_secret' => decryptData($config->app_secret) ?? 'Decryption Failed',
+            'callback_url' => $config->callback_url ?? env('APP_URL') . 'social/auth/instagram/callback'
         ]);
     }
 }
