@@ -4,6 +4,7 @@
 @section('content')
  <h5 class="">Dashboard</h5>
   <div class="row g-3 mt-2">
+    @if (isRolePermission(auth()->user()->role_id, 'Company.List'))
 	<div class="col-sm-6 col-md-3">
       <div class="card overflow-hidden" style="min-width: 12rem">
         <div class="bg-holder bg-card" style="background-image:url(../img/icons/spot-illustrations/corner-1.png);"></div><!--/.bg-holder-->
@@ -14,6 +15,8 @@
         </div>
       </div>
     </div>
+    @endif
+    @if (isRolePermission(auth()->user()->role_id, 'Social Platform.List'))
 	<div class="col-sm-6 col-md-3">
       <div class="card overflow-hidden" style="min-width: 12rem">
         <div class="bg-holder bg-card" style="background-image:url(../img/icons/spot-illustrations/corner-2.png);"></div><!--/.bg-holder-->
@@ -24,6 +27,7 @@
         </div>
       </div>
     </div>
+    @endif
 </div>
 @endsection
 @push('scripts')

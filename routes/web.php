@@ -124,8 +124,8 @@ Route::group(['middleware' => ['PreventBack']], function () {
              * permission groups
              * --------------------------------------------------------------------------------------------------- */
             Route::group(['prefix' => '/permission-groups'], function () {
-                Route::get('/', [PermissionGroupController::class, 'index'])->middleware(['permission:PermissionGroup.List,admin']);
-                Route::get('/create', [PermissionGroupController::class, 'create'])->middleware(['permission:PermissionGroup.Create,admin']);
+                Route::get('/', [PermissionGroupController::class, 'index']);//->middleware(['permission:PermissionGroup.List,admin']);
+                Route::get('/create', [PermissionGroupController::class, 'create']);//->middleware(['permission:PermissionGroup.Create,admin']);
                 Route::post('/store', [PermissionGroupController::class, 'store']);
             });
 
@@ -134,8 +134,8 @@ Route::group(['middleware' => ['PreventBack']], function () {
              * --------------------------------------------------------------------------------------------------- */
 
             Route::group(['prefix' => '/permissions'], function () {
-                Route::get('/', [PermissionController::class, 'index'])->middleware(['permission:Permissions.List,admin']);
-                Route::post('/store', [PermissionController::class, 'store'])->middleware(['permission:Permissions.Create,admin']);
+                Route::get('/', [PermissionController::class, 'index']);//->middleware(['permission:Permissions.List,admin']);
+                Route::post('/store', [PermissionController::class, 'store']);//->middleware(['permission:Permissions.Create,admin']);
             });
         });
 
