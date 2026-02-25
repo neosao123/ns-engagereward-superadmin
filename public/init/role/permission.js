@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $(document).on("change", 'input[type="checkbox"]', function () {
+    $(document).on("change", 'input[type="checkbox"]:not(.group-select-all)', function () {
         var checkboxName = $(this).attr("name");
         var permissionId = $(this).data("permission-id");
         let mode = "set";

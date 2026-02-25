@@ -105,8 +105,8 @@
                         </li>
 						 @endif
 						 {{-- @endhaspermission --}}
-                        @if(isRolePermission(auth()->user()->role_id, 'AppSetting.Edit'))
-                        {{-- @haspermission('AppSetting.Edit', 'admin') --}}
+                        @if(isRolePermission(auth()->user()->role_id, 'AppSetting.List'))
+                        {{-- @haspermission('AppSetting.List', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/app-settings/list') }}" data-bs-toggle="" aria-expanded="false">
                                 <div class="d-flex align-items-center">

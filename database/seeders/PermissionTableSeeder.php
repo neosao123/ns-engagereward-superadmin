@@ -13,6 +13,11 @@ class PermissionTableSeeder extends Seeder
 {
     public function run()
     {
+        // Clear Spatie Permission Cache
+        if (app()->bound(\Spatie\Permission\PermissionRegistrar::class)) {
+            app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        }
+
         $permissions = [
             ['id' => 1, 'name' => 'Role.Create-Update', 'guard_name' => 'admin', 'group_id' => 1],
             ['id' => 2, 'name' => 'Role.List', 'guard_name' => 'admin', 'group_id' => 1],
@@ -57,10 +62,10 @@ class PermissionTableSeeder extends Seeder
             ['id' => 41, 'name' => 'Subscription.Delete', 'guard_name' => 'admin', 'group_id' => 10],
             ['id' => 42, 'name' => 'Subscription.View', 'guard_name' => 'admin', 'group_id' => 10],
             ['id' => 44, 'name' => 'PaymentSetting.Create', 'guard_name' => 'admin', 'group_id' => 11],
-            ['id=' => 45, 'name' => 'MetaSetting.Edit', 'guard_name' => 'admin', 'group_id' => 12],
-            ['id=' => 46, 'name' => 'AppSetting.Edit', 'guard_name' => 'admin', 'group_id' => 13],
-            ['id=' => 47, 'name' => 'InstagramSetting.Edit', 'guard_name' => 'admin', 'group_id' => 14],
-
+            ['id' => 45, 'name' => 'MetaSetting.Edit', 'guard_name' => 'admin', 'group_id' => 12],
+            ['id' => 46, 'name' => 'AppSetting.Edit', 'guard_name' => 'admin', 'group_id' => 13],
+            ['id' => 47, 'name' => 'InstagramSetting.Edit', 'guard_name' => 'admin', 'group_id' => 14],
+            ['id' => 48, 'name' => 'Role.Role-Permission', 'guard_name' => 'admin', 'group_id' => 1],
         ];
 
         try {
@@ -69,27 +74,44 @@ class PermissionTableSeeder extends Seeder
             foreach ($permissions as $perm) {
                 $permissionName = $perm['name'];
 
-                $exists = Permission::where('name', $permissionName)->exists();
-                if (!$exists) {
-                    Permission::create([
-                        'group_id' => $perm['group_id'],
+                // Check existence via DB directly
+                $existing = DB::table('permissions')
+                    ->where('name', $permissionName)
+                    ->where('guard_name', 'admin')
+                    ->first();
+
+                if (!$existing) {
+                    $pId = DB::table('permissions')->insertGetId([
                         'name' => $permissionName,
                         'guard_name' => 'admin',
+                        'group_id' => $perm['group_id'],
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
                     ]);
+                    $permissionId = $pId;
+                } else {
+                    $permissionId = $existing->id;
+                    DB::table('permissions')
+                        ->where('id', $permissionId)
+                        ->update(['group_id' => $perm['group_id'], 'updated_at' => Carbon::now()]);
                 }
 
-                // Give permission to User ID 1
-                $user = Role::where('id', 1)->first();
-                //$user = User::where('id', 1)->first();
-                if ($user && !$user->hasPermissionTo($permissionName, 'admin')) {
-                    $user->givePermissionTo($permissionName);
-                }
+                // Assign to Super Admin (Role 1) and Admin (Role 2)
+                foreach ([1, 2] as $roleId) {
+                    $roleExists = DB::table('roles')->where('id', $roleId)->exists();
+                    if ($roleExists) {
+                        $pivotExists = DB::table('role_has_permissions')
+                            ->where('permission_id', $permissionId)
+                            ->where('role_id', $roleId)
+                            ->exists();
 
-                // Give permission to User ID 2
-                //$user = User::where('id', 2)->first();
-                $user = Role::where('id', 2)->first();
-                if ($user && !$user->hasPermissionTo($permissionName, 'admin')) {
-                    $user->givePermissionTo($permissionName);
+                        if (!$pivotExists) {
+                            DB::table('role_has_permissions')->insert([
+                                'permission_id' => $permissionId,
+                                'role_id' => $roleId,
+                            ]);
+                        }
+                    }
                 }
             }
 

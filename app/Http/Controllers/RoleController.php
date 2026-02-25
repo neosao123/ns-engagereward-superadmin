@@ -241,6 +241,9 @@ class RoleController extends Controller
 			// Create role
 			$result = Role::create($data);
 
+            // Assign Welcome.View permission by default
+            $result->givePermissionTo('Welcome.View');
+
 			LogHelper::logSuccess(
 				'success',
 				'New role added successfully.',
@@ -534,17 +537,30 @@ class RoleController extends Controller
 		try {
 			$mode = $request->mode;
 			$permissionId = $request->permissionId;
+			$permissionIds = $request->permissionIds;
 
 			$role = Role::findOrFail($roleId);
-			$permission = Permission::where('id', $permissionId)->first();
 
-			if ($mode === "revoke") {
-				$role->revokePermissionTo($permission);
-				$message = 'Permission removed successfully';
-			} else {
-				$role->givePermissionTo($permission);
-				$message = 'Permission added successfully';
-			}
+            if ($permissionIds && is_array($permissionIds)) {
+                $permissions = Permission::whereIn('id', $permissionIds)->get();
+                if ($mode === "revoke") {
+                    $role->revokePermissionTo($permissions);
+                    $message = count($permissionIds) . ' permissions removed successfully';
+                } else {
+                    $role->givePermissionTo($permissions);
+                    $message = count($permissionIds) . ' permissions added successfully';
+                }
+            } else {
+                $permission = Permission::findOrFail($permissionId);
+
+                if ($mode === "revoke") {
+                    $role->revokePermissionTo($permission);
+                    $message = 'Permission removed successfully';
+                } else {
+                    $role->givePermissionTo($permission);
+                    $message = 'Permission added successfully';
+                }
+            }
 
 			LogHelper::logSuccess(
 				'success',

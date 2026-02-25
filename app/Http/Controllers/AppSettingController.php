@@ -29,7 +29,7 @@ class AppSettingController extends Controller
             $action = $request->route()->getActionMethod();
 
             $permissions = [
-                'index' => 'AppSetting.Edit',
+                'index' => 'AppSetting.List',
                 'list' => 'AppSetting.List',
                 'edit' => 'AppSetting.Edit',
                 'update' => 'AppSetting.Edit',
