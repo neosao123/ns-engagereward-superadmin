@@ -34,7 +34,8 @@
             </h5>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    @if (Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+                    @if (isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+                    {{-- @if (Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
                         <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}"
                                 class="text-decoration-none text-dark">{{ __('index.dashboard') }}</a></li>
                     @endif
@@ -42,7 +43,8 @@
                 </ol>
             </nav>
         </div>
-        @if (Auth::guard('admin')->user()->can('Subscription.Create', 'admin'))
+        @if (isRolePermission(auth()->user()->role_id, 'Subscription.Create'))
+        {{-- @if (Auth::guard('admin')->user()->can('Subscription.Create', 'admin')) --}}
             <div class="col-auto ms-2 align-items-center">
                 <a href="{{ url('subscription-plan/create') }}" class="btn btn-falcon-primary btn-sm me-1 mb-1"><i
                         class="fas fa-plus me-1"></i>{{ __('index.create') }}</a>
@@ -65,7 +67,9 @@
                         <table id="dt-subscriptions" class="table table-hover">
                             <thead>
                                 <tr>
-                                    @if (Auth::guard('admin')->user()->canany(['Subscription.Edit', 'Subscription.Delete', 'Subscription.View']))
+                                    @php $current_role_id = auth()->user()->role_id; @endphp
+                                    @if (isRolePermission($current_role_id, 'Subscription.Edit') || isRolePermission($current_role_id, 'Subscription.Delete') || isRolePermission($current_role_id, 'Subscription.View'))
+                                    {{-- @if (Auth::guard('admin')->user()->canany(['Subscription.Edit', 'Subscription.Delete', 'Subscription.View'])) --}}
                                         <th scope="col">{{ __('index.action') }}</th>
                                     @endif
                                     <th scope="col">{{ __('index.subscription_title') }}</th>

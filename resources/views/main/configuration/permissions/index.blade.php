@@ -15,7 +15,8 @@
         </h5>
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
-           @if (Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+           @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+           {{-- @if (Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
               <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{ __('index.dashboard') }}</a></li>
            @endif
             <li class="breadcrumb-item">{{ __('index.configuration') }}</li>
@@ -27,7 +28,8 @@
   </div>
 
   <div class="row">
-   @if (Auth::guard('admin')->user()->can('Permissions.Create', 'admin'))
+   @if(isRolePermission(auth()->user()->role_id, 'Permissions.Create'))
+   {{-- @if (Auth::guard('admin')->user()->can('Permissions.Create', 'admin')) --}}
       <div class="col-xl-4 col-lg-4 col-md-5">
         <div class="card mb-3">
           <form action="{{ url('configuration/permissions/store') }}" method="post">
@@ -64,6 +66,7 @@
                   <option value="Permissions">{{ __('index.users-permissions') }}</option>
                   <option value="Block">{{ __('index.users_block') }}</option>
 				  <option value="Status-Change">{{ __('index.status_change') }}</option>
+          <option value="Role-Permission">{{ __('index.role_permissions') }}</option>
                 </select>
                 @error('section')
                   <div class="text-danger">{{ $message }}</div>
@@ -82,7 +85,8 @@
         </div>
       </div>
   @endif
-  @if (Auth::guard('admin')->user()->can('Permissions.List', 'admin'))
+  @if(isRolePermission(auth()->user()->role_id, 'Permissions.List'))
+  {{-- @if (Auth::guard('admin')->user()->can('Permissions.List', 'admin')) --}}
       <div class="col-xl-8 col-lg-8 col-md-7">
         <div class="card mb-3">
           <div class="card-header bg-light">

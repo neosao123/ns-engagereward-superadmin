@@ -15,7 +15,8 @@
     <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
         <div class="navbar-vertical-content scrollbar">
             <ul class="navbar-nav flex-column mb-3" id="navbarVerticalNav">
-                @haspermission('Dashboard.View', 'admin')
+                @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+				{{-- @haspermission('Dashboard.View', 'admin') --}}
 				<li class="nav-item">
                     <!-- parent pages-->
                     <a class="nav-link" href="{{ url('dashboard') }}" role="button" data-bs-toggle="" aria-expanded="false">
@@ -27,8 +28,10 @@
                         </div>
                     </a>
                 </li>
-				@endhaspermission
-				@canany(['Role.List', 'PermissionGroup.List', 'Permissions.List','User.List'])
+				@endif
+				{{-- @endhaspermission --}}
+				@if(isRolePermission(auth()->user()->role_id, 'Role.List') || isRolePermission(auth()->user()->role_id, 'PermissionGroup.List') || isRolePermission(auth()->user()->role_id, 'Permissions.List') || isRolePermission(auth()->user()->role_id, 'User.List') || isRolePermission(auth()->user()->role_id, 'Subscription.List') || isRolePermission(auth()->user()->role_id, 'PaymentSetting.Create') || isRolePermission(auth()->user()->role_id, 'AppSetting.Edit'))
+                {{-- @canany(['Role.List', 'PermissionGroup.List', 'Permissions.List','User.List']) --}}
                 <li class="nav-item">
                     <a class="nav-link dropdown-indicator" href="#dashboard" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="dashboard">
                         <div class="d-flex align-items-center">
@@ -36,7 +39,8 @@
                         </div>
                     </a>
                     <ul class="nav collapse" id="dashboard">
-                        @haspermission('Role.List', 'admin')
+                        @if(isRolePermission(auth()->user()->role_id, 'Role.List'))
+                        {{-- @haspermission('Role.List', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/configuration/role') }}" data-bs-toggle="" aria-expanded="false">
                                 <div class="d-flex align-items-center">
@@ -44,8 +48,10 @@
                                 </div>
                             </a>
                         </li>
-                        @endhaspermission
-                        @haspermission('PermissionGroup.List', 'admin')
+                        @endif
+                        {{-- @endhaspermission --}}
+                        @if(isRolePermission(auth()->user()->role_id, 'PermissionGroup.List'))
+                        {{-- @haspermission('PermissionGroup.List', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/configuration/permission-groups') }}" data-bs-toggle="" aria-expanded="false">
                                 <div class="d-flex align-items-center">
@@ -53,8 +59,10 @@
                                 </div>
                             </a>
                         </li>
-                        @endhaspermission
-                        @haspermission('Permissions.List', 'admin')
+                        @endif
+                        {{-- @endhaspermission --}}
+                        @if(isRolePermission(auth()->user()->role_id, 'Permissions.List'))
+                        {{-- @haspermission('Permissions.List', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/configuration/permissions') }}" data-bs-toggle="" aria-expanded="false">
                                 <div class="d-flex align-items-center">
@@ -62,8 +70,10 @@
                                 </div>
                             </a>
                         </li>
-                        @endhaspermission
-                        @haspermission('User.List', 'admin')
+                        @endif
+                        {{-- @endhaspermission --}}
+                        @if(isRolePermission(auth()->user()->role_id, 'User.List'))
+                        {{-- @haspermission('User.List', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/users') }}" data-bs-toggle="" aria-expanded="false">
                                 <div class="d-flex align-items-center">
@@ -71,8 +81,10 @@
                                 </div>
                             </a>
                         </li>
-						 @endhaspermission
-						  @haspermission('Subscription.List', 'admin')
+						 @endif
+						 {{-- @endhaspermission --}}
+						  @if(isRolePermission(auth()->user()->role_id, 'Subscription.List'))
+                          {{-- @haspermission('Subscription.List', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/subscription-plan') }}" data-bs-toggle="" aria-expanded="false">
                                 <div class="d-flex align-items-center">
@@ -80,8 +92,10 @@
                                 </div>
                             </a>
                         </li>
-						 @endhaspermission
-                         @haspermission('PaymentSetting.Create', 'admin')
+						 @endif
+						 {{-- @endhaspermission --}}
+                         @if(isRolePermission(auth()->user()->role_id, 'PaymentSetting.Create'))
+                         {{-- @haspermission('PaymentSetting.Create', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/payment-setting') }}" data-bs-toggle="" aria-expanded="false">
                                 <div class="d-flex align-items-center">
@@ -89,8 +103,10 @@
                                 </div>
                             </a>
                         </li>
-						 @endhaspermission
-                        @haspermission('AppSetting.Edit', 'admin')
+						 @endif
+						 {{-- @endhaspermission --}}
+                        @if(isRolePermission(auth()->user()->role_id, 'AppSetting.Edit'))
+                        {{-- @haspermission('AppSetting.Edit', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/app-settings/list') }}" data-bs-toggle="" aria-expanded="false">
                                 <div class="d-flex align-items-center">
@@ -98,11 +114,14 @@
                                 </div>
                             </a>
                         </li>
-                        @endhaspermission
+                        @endif
+                        {{-- @endhaspermission --}}
                     </ul>
                 </li>
-                @endcanany
-				@haspermission('Social Platform.List', 'admin')
+                @endif
+                {{-- @endcanany --}}
+				@if(isRolePermission(auth()->user()->role_id, 'Social Platform.List'))
+                {{-- @haspermission('Social Platform.List', 'admin') --}}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('social-media-apps') }}" role="button" data-bs-toggle="" aria-expanded="false">
                         <div class="d-flex align-items-center">
@@ -113,8 +132,10 @@
                         </div>
                     </a>
                 </li>
-                @endhaspermission
-				@haspermission('Company.List', 'admin')
+                @endif
+                {{-- @endhaspermission --}}
+				@if(isRolePermission(auth()->user()->role_id, 'Company.List'))
+                {{-- @haspermission('Company.List', 'admin') --}}
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('company') }}" role="button" data-bs-toggle="" aria-expanded="false">
                         <div class="d-flex align-items-center">
@@ -125,9 +146,11 @@
                         </div>
                     </a>
                 </li>
-                @endhaspermission
+                @endif
+                {{-- @endhaspermission --}}
 
-                @canany(['MetaSetting.Edit', 'InstagramSetting.Edit'])
+                @if(isRolePermission(auth()->user()->role_id, 'MetaSetting.Edit') || isRolePermission(auth()->user()->role_id, 'InstagramSetting.Edit'))
+                {{-- @canany(['MetaSetting.Edit', 'InstagramSetting.Edit']) --}}
                 <li class="nav-item">
                     <a class="nav-link dropdown-indicator" href="#settings" role="button" data-bs-toggle="collapse" aria-expanded="false" aria-controls="settings">
                         <div class="d-flex align-items-center">
@@ -138,23 +161,28 @@
                         </div>
                     </a>
                     <ul class="nav collapse" id="settings">
-                        @haspermission('MetaSetting.Edit', 'admin')
+                        @if(isRolePermission(auth()->user()->role_id, 'MetaSetting.Edit'))
+                        {{-- @haspermission('MetaSetting.Edit', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('settings/meta') }}">
                                 <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Meta (Fb + Insta)</span></div>
                             </a>
                         </li>
-                         @endhaspermission
-                         @haspermission('InstagramSetting.Edit', 'admin')
+                         @endif
+                         {{-- @endhaspermission --}}
+                         @if(isRolePermission(auth()->user()->role_id, 'InstagramSetting.Edit'))
+                         {{-- @haspermission('InstagramSetting.Edit', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('settings/instagram') }}">
                                 <div class="d-flex align-items-center"><span class="nav-link-text ps-1">Instagram</span></div>
                             </a>
                         </li>
-                         @endhaspermission
+                         @endif
+                         {{-- @endhaspermission --}}
                     </ul>
                 </li>
-                @endcanany
+                @endif
+                {{-- @endcanany --}}
             </ul>
         </div>
     </div>

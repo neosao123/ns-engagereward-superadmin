@@ -15,9 +15,39 @@ use App\Models\User;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\LogHelper;
-
+use Spatie\Permission\Models\Role;
 class PermissionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth'); // Ensure user is logged in
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::guard('admin')->user();
+
+            if (!$user) {
+                return $next($request);
+            }
+
+            $role_id = $user->role_id;
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'Permissions.List',
+                'add_permission' => 'Permissions.Create',
+                'store' => 'Permissions.Create',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!isRolePermission($role_id, $permissions[$action])) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+
+            return $next($request);
+        });
+    }
+
 
     /**
 	 * Display paginated list of permissions with their groups
@@ -137,12 +167,14 @@ class PermissionController extends Controller
             );
 
             // Assign permission to default user (ID = 1)
-            $user = User::find(1);
-            $user->givePermissionTo($request->group . '.' . $request->section);
+           // $user = User::find(1);
+            $role = Role::findOrFail(1);
+            $role->givePermissionTo($request->group . '.' . $request->section);
 
             // Assign permission to default user (ID = 2)
-            $user = User::find(2);
-            $user->givePermissionTo($request->group . '.' . $request->section);
+            // $user = User::find(2);
+             $role = Role::findOrFail(2);
+             $role->givePermissionTo($request->group . '.' . $request->section);
 
             return redirect('/configuration/permissions')->with('success', 'Record added successfully');
 

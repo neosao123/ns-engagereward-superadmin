@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\File;
 //use Symfony\Component\Intl\Currencies;
 use Akaunting\Money\Currency;
 use Illuminate\Support\Facades\Crypt;
+use Spatie\Permission\Models\Role;
 
 /*if (!function_exists('getCurrencyList')) {
 	function getCurrencyList(){
@@ -119,5 +120,19 @@ if (!function_exists('decryptData')) {
         } catch (\Exception $e) {
             return null; // Return null if decryption fails
         }
+    }
+}
+
+if (!function_exists('isRolePermission')) {
+    function isRolePermission($role_id, $permission)
+    {
+       /* if (in_array($role_id, [1, 2])) {
+            return true;
+        }*/
+        $role = Role::find($role_id);
+        if ($role->hasPermissionTo($permission)) {
+            return true;
+        }
+        return false;
     }
 }

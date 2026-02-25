@@ -44,12 +44,42 @@ class CompanyController extends Controller
     use HandlesAdminApiRequests, HandlesApiResponses;
     public function __construct()
     {
-        // List & index
-        $this->middleware('permission:Company.List,admin')->only(['index']);
-        $this->middleware('permission:Company.Create,admin')->only(['create']);
-        $this->middleware('permission:Company.View,admin')->only('show');
-        $this->middleware('permission:Company.Edit,admin')->only(['edit']);
-        $this->middleware('permission:Company.Delete,admin')->only('destroy');
+        $this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::guard('admin')->user();
+            if (!$user) return $next($request);
+
+            $role_id = $user->role_id;
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'Company.List',
+                'list' => 'Company.List',
+                'create' => 'Company.Create',
+                'add_basic_info' => 'Company.Create',
+                'add_address_info' => 'Company.Create',
+                'add_social_info' => 'Company.Create',
+                'add_sub_info' => 'Company.Create',
+                'add_document_info' => 'Company.Create',
+                'show' => 'Company.View',
+                'edit' => 'Company.Edit',
+                'update_basic_info' => 'Company.Edit',
+                'update_address_info' => 'Company.Edit',
+                'update_social_info' => 'Company.Edit',
+                'update_document_info' => 'Company.Edit',
+                'destroy' => 'Company.Delete',
+                'excel_download' => 'Company.Export',
+                'pdf_download' => 'Company.Export',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!isRolePermission($role_id, $permissions[$action])) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+            return $next($request);
+        });
     }
 
     /**
@@ -348,11 +378,16 @@ class CompanyController extends Controller
             $srno = $offset + 1;
 
             // Check permissions
-            $canViewAction = Auth::guard('admin')->user()->canany([
+            $role_id = auth()->user()->role_id;
+            $canViewAction = isRolePermission($role_id, 'Company.View') ||
+                             isRolePermission($role_id, 'Company.Edit') ||
+                             isRolePermission($role_id, 'Company.Delete');
+            
+            /* $canViewAction = Auth::guard('admin')->user()->canany([
                 'Company.View',
                 'Company.Edit',
                 'Company.Delete'
-            ]);
+            ]); */
 
             if ($records->count() > 0) {
                 foreach ($records as $row) {
@@ -393,23 +428,27 @@ class CompanyController extends Controller
                                     <div class="bg-white py-2">';
 
                         // View button
-                        if (Auth::guard('admin')->user()->can('Company.View')) {
+                        if (isRolePermission($role_id, 'Company.View')) {
+                        // if (Auth::guard('admin')->user()->can('Company.View')) {
                             $action .= '<a class="dropdown-item" href="' . url('company/' . $row->id) . '"> <i class="fas fa-eye"></i> View</a>';
                         }
 
                         // Edit button
-                        if (Auth::guard('admin')->user()->can('Company.Edit')) {
+                        if (isRolePermission($role_id, 'Company.Edit')) {
+                        // if (Auth::guard('admin')->user()->can('Company.Edit')) {
                             $action .= '<a class="dropdown-item btn-edit" href="' . url('company/' . $row->id . '/edit') . '"> <i class="fas fa-edit"></i> Edit</a>';
                         }
 
                         // Delete button
-                        if (Auth::guard('admin')->user()->can('Company.Delete')) {
+                        if (isRolePermission($role_id, 'Company.Delete')) {
+                        // if (Auth::guard('admin')->user()->can('Company.Delete')) {
                             $action .= '<a class="dropdown-item btn-delete" style="cursor: pointer;" data-id="' . $row->id . '"> <i class="far fa-trash-alt"></i> Delete</a>';
                         }
 
                         // Account action button
 
-                        if (Auth::guard('admin')->user()->can('Company.Status-Change')) {
+                        if (isRolePermission($role_id, 'Company.Status-Change')) {
+                        // if (Auth::guard('admin')->user()->can('Company.Status-Change')) {
                             if ($row->company_code != "" && $row->setup_status == 2) {
                                 $action .= '<a class="dropdown-item btn-account-action" style="cursor: pointer;" data-id="' . $row->id . '"><i class="fas fa-check"></i> Account Action</a>';
                             }
@@ -451,8 +490,8 @@ class CompanyController extends Controller
 
                         // Social platform integration link
                         $action .= '<a class="dropdown-item" href="' . url('company/integration-credentials/' . $row->id . '/add') . '">
-                                  <i class="fas fa-share-alt me-2"></i> Social Platform Integration
-                               </a>';
+                                   <i class="fas fa-share-alt me-2"></i> Social Platform Integration
+                                </a>';
 
                         // if ($row->setup_status !== 2) {
                             $action .= '<a class="dropdown-item btn-edit text-success" href="' . url('company/' . $row->id . '/setup') . '"><i class="fas fa-magic"></i> Site Setup </a>';

@@ -26,10 +26,12 @@
     </h5>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+        @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+        {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
         <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{__('index.dashboard')}}</a></li>
         @endif
-        @if(Auth::guard('admin')->user()->can('Setting.List', 'admin'))
+        @if(isRolePermission(auth()->user()->role_id, 'Setting.List'))
+        {{-- @if(Auth::guard('admin')->user()->can('Setting.List', 'admin')) --}}
         <li class="breadcrumb-item"><a href="{{ url('/setting') }}" class="text-decoration-none text-dark">{{__('index.setting')}}</a></li>
         @endif
         <li class="breadcrumb-item active" aria-current="page">{{ __('index.view') }}</li>

@@ -13,14 +13,41 @@ use DB;
 use App\Models\Company;
 use App\Models\SocialMediaApp;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 class DashboardController extends Controller
 {
 	
 	public function __construct()
     {
         // List & index
-        $this->middleware('permission:Dashboard.View,admin')->only(['index']);
-		$this->middleware('permission:Welcome.View,admin')->only(['welcome']);
+        //$this->middleware('permission:Dashboard.View,admin')->only(['index']);
+		//$this->middleware('permission:Welcome.View,admin')->only(['welcome']);
+
+
+		$this->middleware('auth'); // Ensure user is logged in
+
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::guard('admin')->user();
+
+            if (!$this->user) {
+                return $next($request);
+            }
+
+            $role = Role::find($this->user->role_id);
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'Dashboard.View',
+                'welcome' => 'Welcome.View'
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!$role || !$role->hasPermissionTo($permissions[$action], 'admin')) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+            return $next($request);
+        });
 	}
 	
 	/**
@@ -38,7 +65,8 @@ class DashboardController extends Controller
 			$admin = Auth::guard('admin')->user();
 
 			// Check permissions
-			if ($admin->role_id != 1 && !$admin->can('Dashboard.View')) {
+			if (!in_array($admin->role_id, [1, 2]) && !isRolePermission($admin->role_id, 'Dashboard.View')) {
+			//if ($admin->role_id != 1 && !$admin->can('Dashboard.View')) {
 				LogHelper::logSuccess(
 					'success',
 					'dashboard.welcome_page_success',

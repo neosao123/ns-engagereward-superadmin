@@ -23,14 +23,16 @@
           class="border position-absolute top-50 translate-middle-y w-100 start-0 z-index--1"></span></h5>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-			@if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+			@if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+			{{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
 			<li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{ __('index.dashboard') }}</a></li>
 			@endif
           <li class="breadcrumb-item active" aria-current="page">{{ __('index.setting') }}</li>
         </ol>
       </nav>
     </div>
-    @if(Auth::guard('admin')->user()->can('Setting.Create', 'admin'))
+    @if(isRolePermission(auth()->user()->role_id, 'Setting.Create'))
+    {{-- @if(Auth::guard('admin')->user()->can('Setting.Create', 'admin')) --}}
     <div class="col-auto ms-2 align-items-center">
         <a href="{{ url('setting/create' ) }}" class="btn btn-falcon-primary btn-sm me-1 mb-1">{{__('index.create')}}</a>
     </div>
@@ -51,7 +53,9 @@
               <table id="dt-setting" class="table table-hover">
                 <thead>
                   <tr>
-				    @if(Auth::guard('admin')->user()->canany(['Setting.Edit','Setting.Delete','Setting.View']))
+				    @php $current_role_id = auth()->user()->role_id; @endphp
+				    @if(isRolePermission($current_role_id, 'Setting.Edit') || isRolePermission($current_role_id, 'Setting.Delete') || isRolePermission($current_role_id, 'Setting.View'))
+				    {{-- @if(Auth::guard('admin')->user()->canany(['Setting.Edit','Setting.Delete','Setting.View'])) --}}
 				    <th scope="col">{{ __('index.action') }}</th>
 				    @endif
                     <th scope="col" >{{ __('index.contact_email') }}</th>

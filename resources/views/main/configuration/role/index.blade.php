@@ -29,7 +29,8 @@
         <h5 class="mb-0 text-primary position-relative"><span class="bg-200 dark__bg-1100 pe-3">{{__('index.role')}}</span><span class="border position-absolute top-50 translate-middle-y w-100 start-0 z-index--1"></span></h5>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                 @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+                 @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+                 {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
                 <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{__('index.dashboard')}}</a></li>
                  @endif
                 <li class="breadcrumb-item active" aria-current="page">{{__('index.role')}}</li>
@@ -40,7 +41,8 @@
 <div class="row gx-3">
 
     <!-- Add|Edit Role -->
-   @if(Auth::guard('admin')->user()->can('Role.Create-Update', 'admin'))
+    @if(isRolePermission(auth()->user()->role_id, 'Role.Create-Update'))
+    {{-- @if(Auth::guard('admin')->user()->can('Role.Create-Update', 'admin')) --}}
   
      <div class="col-lg-4">
 	    <form class="" id="form-role" data-parsley-validate=""> 
@@ -72,7 +74,8 @@
   @endif
 	<!-- List Role -->
 
-    @if(Auth::guard('admin')->user()->can('Role.List', 'admin'))
+    @if(isRolePermission(auth()->user()->role_id, 'Role.List'))
+    {{-- @if(Auth::guard('admin')->user()->can('Role.List', 'admin')) --}}
 
 
     <div class="col-lg-8">
@@ -86,7 +89,8 @@
                         <thead>
                             <tr>
                                 <th scope="col">{{__('index.role')}}</th>
-                               @if(Auth::guard('admin')->user()->canany(['Role.Create-Update', 'Role.Delete']))
+                               @if(isRolePermission(auth()->user()->role_id, 'Role.Create-Update') || isRolePermission(auth()->user()->role_id, 'Role.Delete'))
+                               {{-- @if(Auth::guard('admin')->user()->canany(['Role.Create-Update', 'Role.Delete'])) --}}
                                 <th class="text-end" scope="col">{{__('index.role_action')}}</th>
                                @endif
                             </tr>

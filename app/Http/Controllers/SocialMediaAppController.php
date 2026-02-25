@@ -22,16 +22,43 @@ use DB;
 class SocialMediaAppController extends Controller
 {
 
-	public function __construct()
+    public function __construct()
     {
         // List & index
-        $this->middleware('permission:Social Platform.List,admin')->only(['index']);
+        /*$this->middleware('permission:Social Platform.List,admin')->only(['index']);
 		$this->middleware('permission:Social Platform.Create,admin')->only(['create', 'store']);
 		$this->middleware('permission:Social Platform.View,admin')->only('show');
 		$this->middleware('permission:Social Platform.Edit,admin')->only(['edit', 'update']);
-		$this->middleware('permission:Social Platform.Delete,admin')->only('destroy');
+		$this->middleware('permission:Social Platform.Delete,admin')->only('destroy');*/
 
-	}
+        $this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::guard('admin')->user();
+            if (!$user) return $next($request);
+
+            $role_id = $user->role_id;
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'Social Platform.List',
+                'list' => 'Social Platform.List',
+                'create' => 'Social Platform.Create',
+                'store' => 'Social Platform.Create',
+                'show' => 'Social Platform.View',
+                'edit' => 'Social Platform.Edit',
+                'update' => 'Social Platform.Edit',
+                'destroy' => 'Social Platform.Delete',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!isRolePermission($role_id, $permissions[$action])) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+            return $next($request);
+        });
+    }
 
 	 /**
 	 * Display the social platform management index page
@@ -102,12 +129,15 @@ class SocialMediaAppController extends Controller
 			$total = $filteredData['totalRecords'];
 			$result = $filteredData['result'];
 
-			$canViewAction = Auth::guard('admin')->user()->canany([
+			$canViewAction = isRolePermission(auth()->user()->role_id, 'Social Platform.Edit') ||
+				             isRolePermission(auth()->user()->role_id, 'Social Platform.Delete') ||
+				             isRolePermission(auth()->user()->role_id, 'Social Platform.View');
+			
+			/*$canViewAction = Auth::guard('admin')->user()->canany([
 				'Social Platform.Edit',
 				'Social Platform.Delete',
 				'Social Platform.View'
-			]);
-
+			]);*/
 			if ($result && $result->count() > 0) {
 				foreach ($result as $row) {
 					$formattedDate = Carbon::parse($row->created_at)->format('d-m-Y h:i:s A');
@@ -123,11 +153,18 @@ class SocialMediaAppController extends Controller
 								</button>
 								<div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="social-app-dropdown-' . $row->id . '">
 									<div class="bg-white py-2">';
+						if (isRolePermission(auth()->user()->role_id, 'Social Platform.Edit')) {
+							$action .= '<a class="dropdown-item text-warning" href="' . url('social-media-apps/' . $row->id . '/edit') . '"> <i class="fas fa-edit"></i> ' . __('index.edit') . ' </a>';
+						}
 						/*if (Auth::guard('admin')->user()->can('Social Platform.Edit')) {
 							$action .= '<a class="dropdown-item text-warning" href="' . url('social-media-apps/' . $row->id . '/edit') . '"> <i class="fas fa-edit"></i> ' . __('index.edit') . ' </a>';
 						}*/
-						if (Auth::guard('admin')->user()->can('Social Platform.View')) {
+						if (isRolePermission(auth()->user()->role_id, 'Social Platform.View')) {
+						//if (Auth::guard('admin')->user()->can('Social Platform.View')) {
 							$action .= '<a class="dropdown-item" href="' . url('social-media-apps/' . $row->id) . '"> <i class="far fa-folder-open"></i> ' . __('index.view') . '</a>';
+						}
+						if (isRolePermission(auth()->user()->role_id, 'Social Platform.Delete')) {
+							$action .= '<a class="dropdown-item btn-delete" style="cursor: pointer;" data-id="' . $row->id . '"> <i class="far fa-trash-alt"></i> ' . __('index.delete') . '</a>';
 						}
 						/*if (Auth::guard('admin')->user()->can('Social Platform.Delete')) {
 							$action .= '<a class="dropdown-item btn-delete" style="cursor: pointer;" data-id="' . $row->id . '"> <i class="far fa-trash-alt"></i> ' . __('index.delete') . '</a>';

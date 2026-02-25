@@ -13,6 +13,35 @@ use App\Helpers\LogHelper;
 
 class PermissionGroupController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth'); // Ensure user is logged in
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::guard('admin')->user();
+
+            if (!$user) {
+                return $next($request);
+            }
+
+            $role_id = $user->role_id;
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'PermissionGroup.List',
+                'store' => 'PermissionGroup.Create',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!isRolePermission($role_id, $permissions[$action])) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+
+            return $next($request);
+        });
+    }
+
    
     /**
 	 * Display paginated list of permission groups

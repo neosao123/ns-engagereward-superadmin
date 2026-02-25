@@ -65,7 +65,7 @@ class User extends Authenticatable
     {
         $query = self::select("users.*", 'roles.name as role_name')
             ->join('roles', 'roles.id', '=', 'users.role_id')
-            ->where('role_id', "!=", 1)
+            ->whereNotIn('role_id', [1, 2])
             ->whereNull('deleted_at');
         if ($user != "") {
             $query->where('users.id', $user);

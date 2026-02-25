@@ -37,11 +37,43 @@ class SubscriptionPlanController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('permission:Subscription.List,admin')->only(['index', 'list']);
-        $this->middleware('permission:Subscription.Create,admin')->only(['create', 'store']);
-        $this->middleware('permission:Subscription.View,admin')->only('show');
-        $this->middleware('permission:Subscription.Edit,admin')->only(['edit', 'update']);
-        $this->middleware('permission:Subscription.Delete,admin')->only('destroy');
+        // $this->middleware('permission:Subscription.List,admin')->only(['index', 'list']);
+        // $this->middleware('permission:Subscription.Create,admin')->only(['create', 'store']);
+        // $this->middleware('permission:Subscription.View,admin')->only('show');
+        // $this->middleware('permission:Subscription.Edit,admin')->only(['edit', 'update']);
+        // $this->middleware('permission:Subscription.Delete,admin')->only('destroy');
+
+        $this->middleware('auth'); // Ensure user is logged in
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::guard('admin')->user();
+
+            if (!$user) {
+                return $next($request);
+            }
+
+            $role_id = $user->role_id;
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'Subscription.List',
+                'list' => 'Subscription.List',
+                'create' => 'Subscription.Create',
+                'store' => 'Subscription.Create',
+                'show' => 'Subscription.View',
+                'edit' => 'Subscription.Edit',
+                'update' => 'Subscription.Edit',
+                'destroy' => 'Subscription.Delete',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!isRolePermission($role_id, $permissions[$action])) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+
+            return $next($request);
+        });
     }
 
     /**
@@ -140,23 +172,33 @@ class SubscriptionPlanController extends Controller
             $data = [];
             foreach ($subscriptions as $sub) {
                 $action = '';
-                if (Auth::guard('admin')->user()->canany(['Subscription.Edit', 'Subscription.View', 'Subscription.Delete'])) {
+                $role_id = auth()->user()->role_id;
+                if (isRolePermission($role_id, 'Subscription.Edit') || isRolePermission($role_id, 'Subscription.View') || isRolePermission($role_id, 'Subscription.Delete')) {
+                //if (Auth::guard('admin')->user()->canany(['Subscription.Edit', 'Subscription.View', 'Subscription.Delete'])) {
                     $action = '
                     <div class="dropdown">
                         <button class="btn btn-link text-600 btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="fas fa-ellipsis-h"></i>
                         </button>
                         <div class="dropdown-menu">';
-                    if (Auth::guard('admin')->user()->can('Subscription.Edit')) {
+                    if (isRolePermission($role_id, 'Subscription.Edit')) {
+                    //if (Auth::guard('admin')->user()->can('Subscription.Edit')) {
                         $action .= '<a class="dropdown-item text-warning" href="' . url('subscription-plan/' . $sub->id . '/edit') . '"> <i class="fas fa-edit"></i> ' . __('index.edit') . ' </a>';
                     }
-                    if (Auth::guard('admin')->user()->can('Subscription.View')) {
+                    if (isRolePermission($role_id, 'Subscription.View')) {
+                    //if (Auth::guard('admin')->user()->can('Subscription.View')) {
                         $action .= '<a class="dropdown-item" href="' . url('subscription-plan/' . $sub->id) . '"> <i class="far fa-folder-open"></i> ' . __('index.view') . '</a>';
                     }
-                    if (Auth::guard('admin')->user()->can('Subscription.Delete')) {
+                    if (isRolePermission($role_id, 'Subscription.Delete')) {
+                    //if (Auth::guard('admin')->user()->can('Subscription.Delete')) {
                         $action .= '<a class="dropdown-item btn-delete" style="cursor: pointer;" data-id="' . $sub->id . '"> <i class="far fa-trash-alt"></i> ' . __('index.delete') . '</a>';
                     }
                     $action .= '</div></div>';
+                }
+
+                $rowData = [];
+                if (isRolePermission($role_id, 'Subscription.Edit') || isRolePermission($role_id, 'Subscription.View') || isRolePermission($role_id, 'Subscription.Delete')) {
+                    $rowData[] = $action;
                 }
 
                 $currencySymbol = ''; // default symbol
@@ -182,20 +224,19 @@ class SubscriptionPlanController extends Controller
                     $discountValue = '-';
                 }
 
-                $data[] = [
-                    $action,
-                    $sub->subscription_title,
-                    $sub->subscription_months,
-                    $perMonthPrice,
-                    $sub->discount_type ?? "-",
-                    $discountValue,
-                    '<div style="font-size:14px;">' . $totalPrice . '</div>',
-                    $sub->from_date ? Carbon::parse($sub->from_date)->format('d-m-Y') : '-',
-                    $sub->to_date ? Carbon::parse($sub->to_date)->format('d-m-Y') : '-',
-                    $sub->is_active
+                $rowData[] = $sub->subscription_title;
+                $rowData[] = $sub->subscription_months;
+                $rowData[] = $perMonthPrice;
+                $rowData[] = $sub->discount_type ?? "-";
+                $rowData[] = $discountValue;
+                $rowData[] = '<div style="font-size:14px;">' . $totalPrice . '</div>';
+                $rowData[] = $sub->from_date ? Carbon::parse($sub->from_date)->format('d-m-Y') : '-';
+                $rowData[] = $sub->to_date ? Carbon::parse($sub->to_date)->format('d-m-Y') : '-';
+                $rowData[] = $sub->is_active
                         ? '<span class="badge bg-success">Active</span>'
-                        : '<span class="badge bg-danger">Inactive</span>',
-                ];
+                        : '<span class="badge bg-danger">Inactive</span>';
+
+                $data[] = $rowData;
             }
 
             return response()->json([
