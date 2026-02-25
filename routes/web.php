@@ -112,6 +112,8 @@ Route::group(['middleware' => ['PreventBack']], function () {
                 Route::get('/edit', [RoleController::class, 'edit']);
                 Route::post('/update', [RoleController::class, 'update']);
                 Route::get('/delete/{id}', [RoleController::class, 'destroy']);
+                Route::get('/{roleId}/permissions', [RoleController::class, 'role_permission']);
+                Route::get('/{roleId}/set-permission', [RoleController::class, 'assign_role_permission']);
             });
             /*Route::group(['prefix' => 'role'], function () {
                 Route::get('/list', [RoleController::class, 'list']);

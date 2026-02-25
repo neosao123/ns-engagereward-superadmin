@@ -20,18 +20,53 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Helpers\LogHelper;
+use App\Models\PermissionGroup;
+use Spatie\Permission\Models\Permission;
 class RoleController extends Controller
 {
 
-	public function __construct()
+    public $user;
+
+    public function __construct()
     {
         // List & index
-        $this->middleware('permission:Role.List,admin')->only(['List','index']);
-		$this->middleware('permission:Role.Edit,admin')->only(['edit']);
-		$this->middleware('permission:Role.Create-Update,admin')->only(['update']);
-		$this->middleware('permission:User.Delete,admin')->only('destroy');
+        // $this->middleware('permission:Role.List,admin')->only(['List','index']);
+		// $this->middleware('permission:Role.Edit,admin')->only(['edit']);
+		// $this->middleware('permission:Role.Create-Update,admin')->only(['update']);
+		// $this->middleware('permission:User.Delete,admin')->only('destroy');
 
-	}
+		$this->middleware('auth'); // Ensure user is logged in
+
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::guard('admin')->user();
+
+            if (!$this->user) {
+                return $next($request);
+            }
+
+            $role = Role::find($this->user->role_id);
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'Role.List',
+                'list' => 'Role.List',
+                'store' => 'Role.Create-Update',
+                'edit' => 'Role.Edit',
+                'update' => 'Role.Create-Update',
+                'destroy' => 'Role.Delete',
+                'role_permission' => 'Role.Role-Permission',
+                'assign_role_permission' => 'Role.Role-Permission',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!$role || !$role->hasPermissionTo($permissions[$action], 'admin')) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+
+            return $next($request);
+        });
+    }
 
 	  /**
 	 * Display the role management index page
@@ -107,11 +142,19 @@ class RoleController extends Controller
 			if ($result && $result->count() > 0) {
 				foreach ($result as $row) {
 					$action = '<div class="text-end">';
-					if (Auth::guard('admin')->user()->can('Role.Delete')) {
+					if (isRolePermission(auth()->user()->role_id, 'Role.Delete')) {
+					//if (Auth::guard('admin')->user()->can('Role.Delete')) {
 						$action .= '<a class="btn btn-default border-300 btn-sm btn-delete-role me-1 text-600" data-role_id="' . $row['id'] . '" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete"><span class="far fa-trash-alt text-danger"></span></a>';
+					//}
 					}
-					if (Auth::guard('admin')->user()->can('Role.Edit')) {
+					if (isRolePermission(auth()->user()->role_id, 'Role.Edit')) {
+					//if (Auth::guard('admin')->user()->can('Role.Edit')) {
 						$action .= '<a class="btn btn-default border-300 btn-sm btn-edit-role me-1 text-600 shadow-none" data-role_id="' . $row['id'] . '" data-bs-toggle="tooltip" data-bs-placement="top" title="Edit"><span class="far fa-edit text-warning"></span></a>';
+					//}
+					}
+					if (isRolePermission(auth()->user()->role_id, 'Role.Role-Permission')) {
+					$permission_url = url("configuration/role/{$row->id}/permissions");
+					$action .= '<a class="btn btn-default border-300 btn-sm me-1 text-600 shadow-none" href="' . $permission_url . '" data-bs-toggle="tooltip" data-bs-placement="top" title="Permissions"><span class="fas fa-lock text-success"></span></a>';
 					}
 					$action .= '</div>';
 
@@ -435,6 +478,98 @@ class RoleController extends Controller
 				'status' => 500,
 				'message' => 'An error occurred while deleting the role.'
 			]);
+		}
+	}
+
+	/**
+	 * Display the permission setup page for a specific role
+	 *
+	 * @param int $roleId
+	 * @return \Illuminate\View\View
+	 */
+	public function role_permission($roleId)
+	{
+		try {
+			$role = Role::where('id', $roleId)->first();
+			$permissions = Permission::all();
+			$groups = PermissionGroup::all();
+			$role_has_permissions = $role->permissions;
+
+			LogHelper::logSuccess(
+				'success',
+				'Role permissions page loaded.',
+				__FUNCTION__,
+				basename(__FILE__),
+				__LINE__,
+				request()->path(),
+				auth()->id()
+			);
+
+			return view('main.configuration.role.permissions', compact('role', 'roleId', 'groups', 'permissions', 'role_has_permissions'));
+		} catch (\Exception $ex) {
+			LogHelper::logError(
+				'exception',
+				'An error occurred while loading role permissions.',
+				$ex->getMessage(),
+				__FUNCTION__,
+				basename(__FILE__),
+				__LINE__,
+				request()->path(),
+				auth()->id()
+			);
+
+			return redirect()->back()->with('error', 'An error occurred while loading role permissions.');
+		}
+	}
+
+	/**
+	 * Assign or revoke a permission to a role
+	 *
+	 * @param int $roleId
+	 * @param Request $request
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function assign_role_permission($roleId, Request $request)
+	{
+		try {
+			$mode = $request->mode;
+			$permissionId = $request->permissionId;
+
+			$role = Role::findOrFail($roleId);
+			$permission = Permission::where('id', $permissionId)->first();
+
+			if ($mode === "revoke") {
+				$role->revokePermissionTo($permission);
+				$message = 'Permission removed successfully';
+			} else {
+				$role->givePermissionTo($permission);
+				$message = 'Permission added successfully';
+			}
+
+			LogHelper::logSuccess(
+				'success',
+				$message,
+				__FUNCTION__,
+				basename(__FILE__),
+				__LINE__,
+				request()->path(),
+				auth()->id()
+			);
+
+			return response()->json(['status' => 200, 'message' => $message], 200);
+		} catch (\Exception $exception) {
+			LogHelper::logError(
+				'exception',
+				'An error occurred while assigning/revoking role permission.',
+				$exception->getMessage(),
+				__FUNCTION__,
+				basename(__FILE__),
+				__LINE__,
+				request()->path(),
+				auth()->id()
+			);
+
+			return response()->json(["status" => 400, "message" => $exception->getMessage()], 400);
 		}
 	}
 

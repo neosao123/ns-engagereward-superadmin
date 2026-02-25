@@ -15,7 +15,8 @@
                 </h5>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        @if (Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+                        @if (isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+                        {{-- @if (Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
                             <li class="breadcrumb-item">
                                 <a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">
                                     @lang('index.dashboard')</a>

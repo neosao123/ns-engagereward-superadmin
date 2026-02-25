@@ -186,6 +186,8 @@ return [
     "role_list" => "Role List",
     "role_action" => "Action",
     "update_role" => "Update Role",
+    "role_permissions" => "Role Permissions",
+    "role_wise_permissions" => "Role-wise Permissions",
 
     "configuration" => "Configuration",
     "users-permissions" => "Users Permissions",

@@ -28,10 +28,12 @@
             <h5 class="mb-0 text-primary position-relative"><span class="bg-200 dark__bg-1100 pe-3">{{__('index.user_permissions_access_rights')}}</span><span class="border position-absolute top-50 translate-middle-y w-100 start-0 z-index--1"></span></h5>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+                    @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+                    {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
                     <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{__('index.dashboard')}}</a></li>
                     @endif
-                    @if(Auth::guard('admin')->user()->can('User.List', 'admin'))
+                    @if(isRolePermission(auth()->user()->role_id, 'User.List'))
+                    {{-- @if(Auth::guard('admin')->user()->can('User.List', 'admin')) --}}
                     <li class="breadcrumb-item"><a href="{{ url('/users') }}" class="text-decoration-none text-dark">{{__('index.users')}}</a></li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page">{{__('index.permissions')}}</li>
@@ -39,7 +41,8 @@
             </nav>
         </div>
     </div>
-    @if(Auth::guard('admin')->user()->can('User.List', 'admin'))
+    @if(isRolePermission(auth()->user()->role_id, 'User.List'))
+    {{-- @if(Auth::guard('admin')->user()->can('User.List', 'admin')) --}}
     <div class="col-auto ms-2 align-items-center">
         <a href="{{ url('users') }}" class="btn btn-falcon-primary btn-sm me-1 mb-1">{{__('index.back')}}</a>
     </div>

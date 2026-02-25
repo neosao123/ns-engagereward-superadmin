@@ -37,18 +37,21 @@
             <h5 class="mb-0 text-primary position-relative"><span class="bg-200 dark__bg-1100 pe-3">{{__('index.create')}}</span><span class="border position-absolute top-50 translate-middle-y w-100 start-0 z-index--1"></span></h5>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+                    @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+                    {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
                     <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{__('index.dashboard')}}</a></li>
                     @endif
-					@if(Auth::guard('admin')->user()->can('Social Platform.List', 'admin'))
-                    <li class="breadcrumb-item"><a href="{{ url('/social-media-apps') }}" class="text-decoration-none text-dark">{{__('index.social_media_app')}}</a></li>
+					@if(isRolePermission(auth()->user()->role_id, 'Social Platform.List'))
+					{{-- @if(Auth::guard('admin')->user()->can('Social Platform.List', 'admin')) --}}
+                   <li class="breadcrumb-item"><a href="{{ url('/social-media-apps') }}" class="text-decoration-none text-dark">{{__('index.social_media_app')}}</a></li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page">{{__('index.create')}}</li>
                 </ol>
             </nav>
         </div>
     </div>
-    @if(Auth::guard('admin')->user()->can('Social Platform.List', 'admin'))
+    @if(isRolePermission(auth()->user()->role_id, 'Social Platform.List'))
+    {{-- @if(Auth::guard('admin')->user()->can('Social Platform.List', 'admin')) --}}
     <div class="col-auto ms-2 align-items-center">
         <a href="{{ url('social-media-apps') }}" class="btn btn-falcon-primary btn-sm me-1 mb-1">{{__('index.back')}}</a>
     </div>

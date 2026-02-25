@@ -29,7 +29,8 @@
             <h5 class="mb-0 text-primary position-relative"><span class="bg-200 dark__bg-1100 pe-3">{{__('index.users')}}</span><span class="border position-absolute top-50 translate-middle-y w-100 start-0 z-index--1"></span></h5>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+                    @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+                    {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
                     <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">Dashboard</a></li>
                     @endif
                     <li class="breadcrumb-item active" aria-current="page">{{__('index.users')}}</li>
@@ -37,7 +38,8 @@
             </nav>
         </div>
     </div>
-    @if(Auth::guard('admin')->user()->can('User.Create', 'admin'))
+    @if(isRolePermission(auth()->user()->role_id, 'User.Create'))
+    {{-- @if(Auth::guard('admin')->user()->can('User.Create', 'admin')) --}}
     <div class="col-auto ms-2 align-items-center">
         <a href="{{ url('users/create' ) }}" class="btn btn-falcon-primary btn-sm me-1 mb-1"><i class="fas fa-plus me-1"></i>{{__('index.create')}}</a>
     </div>
@@ -66,7 +68,8 @@
 				 <div class="col-12 d-flex justify-content-between mt-3">
 					<div>
 						<!-- Excel and PDF Buttons -->
-						@if(Auth::guard('admin')->user()->can('User.Export', 'admin'))
+						@if(isRolePermission(auth()->user()->role_id, 'User.Export'))
+						{{-- @if(Auth::guard('admin')->user()->can('User.Export', 'admin')) --}}
 						 <button type="button" id="btnExcelDownload"
                                     class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-file-excel me-1"></i>{{ __('index.export_to_csv') }}</button>
                          <button type="button" id="btnPdfDownload"
@@ -91,7 +94,8 @@
                     <table id="dt-users" class="table table-hover">
                         <thead>
                             <tr>  
-                                @if(Auth::guard('admin')->user()->canany(['User.Edit','User.Delete','User.View','User.Permissions','User.Export']))
+                                @if(isRolePermission(auth()->user()->role_id, 'User.Edit') || isRolePermission(auth()->user()->role_id, 'User.Delete') || isRolePermission(auth()->user()->role_id, 'User.View') || isRolePermission(auth()->user()->role_id, 'User.Permissions') || isRolePermission(auth()->user()->role_id, 'User.Export'))
+                                {{-- @if(Auth::guard('admin')->user()->canany(['User.Edit','User.Delete','User.View','User.Permissions','User.Export'])) --}}
                                 <th scope="col">{{__('index.action')}}</th>
                                 @endif	
                                 <th scope="col">{{__('index.username')}}</th>								

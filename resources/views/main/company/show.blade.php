@@ -46,17 +46,20 @@
     </h5>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-       @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+       @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+       {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
         <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{__('index.dashboard')}}</a></li>
        @endif  
-       @if(Auth::guard('admin')->user()->can('Company.List', 'admin'))	   
+       @if(isRolePermission(auth()->user()->role_id, 'Company.List'))
+       {{-- @if(Auth::guard('admin')->user()->can('Company.List', 'admin')) --}}
        <li class="breadcrumb-item"><a href="{{ url('/company') }}" class="text-decoration-none text-dark">{{__('index.company')}}</a></li>
        @endif
        <li class="breadcrumb-item active" aria-current="page">{{__('index.view')}}</li>
       </ol>
     </nav>
   </div>
-   @if(Auth::guard('admin')->user()->can('Company.List', 'admin'))
+   @if(isRolePermission(auth()->user()->role_id, 'Company.List'))
+   {{-- @if(Auth::guard('admin')->user()->can('Company.List', 'admin')) --}}
   <div class="col-auto ms-2">
     <a class="btn btn-falcon-default btn-sm" href="{{ url('company') }}">
       <span class="px-2">{{ __('index.back') }}</span>

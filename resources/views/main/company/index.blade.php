@@ -33,7 +33,8 @@
         </h5>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-               @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+               @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+               {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
 			   <li class="breadcrumb-item">
                     <a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{ __('index.dashboard') }}</a>
                 </li>
@@ -42,7 +43,8 @@
             </ol>
         </nav>
     </div>
-	 @if(Auth::guard('admin')->user()->can('Company.Create', 'admin'))
+	 @if(isRolePermission(auth()->user()->role_id, 'Company.Create'))
+	 {{-- @if(Auth::guard('admin')->user()->can('Company.Create', 'admin')) --}}
 	 <div class="col-auto ms-2 align-items-center">
         <a href="{{ url('company/create' ) }}" class="btn btn-falcon-primary btn-sm me-1 mb-1"><i class="fas fa-plus me-1"></i>{{ __('index.create') }}</a>
     </div>
@@ -78,7 +80,8 @@
                 <!-- Filter Buttons -->
                 <div class="col-12 d-flex justify-content-between mt-3">
                     <div>
-                        @if(Auth::guard('admin')->user()->can('Company.Export', 'admin'))
+                        @if(isRolePermission(auth()->user()->role_id, 'Company.Export'))
+                        {{-- @if(Auth::guard('admin')->user()->can('Company.Export', 'admin')) --}}
 						<button type="button" id="btnExcelDownload"
 										class="btn btn-sm btn-outline-secondary me-1">
 									<i class="fas fa-file-excel me-1"></i> {{ __('index.export_to_csv') }}
@@ -111,7 +114,8 @@
                     <table id="dt-company" class="table table-hover">
                         <thead>
                             <tr>
-							    @if(Auth::guard('admin')->user()->canany(['Company.Edit','Company.Delete','Company.View']))
+							    @if(isRolePermission(auth()->user()->role_id, 'Company.Edit') || isRolePermission(auth()->user()->role_id, 'Company.Delete') || isRolePermission(auth()->user()->role_id, 'Company.View'))
+							    {{-- @if(Auth::guard('admin')->user()->canany(['Company.Edit','Company.Delete','Company.View'])) --}}
                                 <th scope="col">{{ __('index.action') }}</th>
 							    @endif
                                  <th scope="col">{{ __('index.company_code') }}</th>

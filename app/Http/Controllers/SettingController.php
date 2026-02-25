@@ -20,16 +20,42 @@ class SettingController extends Controller
 	
 	//author:neosao
 	//date:20-6-2025
-	public function __construct()
+    public function __construct()
     {
-        // List & index
-        $this->middleware('permission:Setting.List,admin')->only(['index']);
-		$this->middleware('permission:Setting.Create,admin')->only(['create', 'store']);
-		$this->middleware('permission:Setting.View,admin')->only('show');
-		$this->middleware('permission:Setting.Edit,admin')->only(['edit', 'update']);
-		$this->middleware('permission:Setting.Delete,admin')->only('destroy');
+        // $this->middleware('permission:Setting.List,admin')->only(['index']);
+        // $this->middleware('permission:Setting.Create,admin')->only(['create', 'store']);
+        // $this->middleware('permission:Setting.View,admin')->only('show');
+        // $this->middleware('permission:Setting.Edit,admin')->only(['edit', 'update']);
+        // $this->middleware('permission:Setting.Delete,admin')->only('destroy');
 
-	}
+        $this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::guard('admin')->user();
+            if (!$user) return $next($request);
+
+            $role_id = $user->role_id;
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'Setting.List',
+                'list' => 'Setting.List',
+                'create' => 'Setting.Create',
+                'store' => 'Setting.Create',
+                'show' => 'Setting.View',
+                'edit' => 'Setting.Edit',
+                'update' => 'Setting.Edit',
+                'destroy' => 'Setting.Delete',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!isRolePermission($role_id, $permissions[$action])) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+            return $next($request);
+        });
+    }
 
 	 /**
      * Display a index page of the resource.
@@ -84,11 +110,15 @@ class SettingController extends Controller
 			$total = $filteredData['totalRecords'];
 			$result = $filteredData['result'];
 
-			$canViewAction = Auth::guard('admin')->user()->canany([
+			$canViewAction = isRolePermission(auth()->user()->role_id, 'Setting.Edit') ||
+				             isRolePermission(auth()->user()->role_id, 'Setting.Delete') ||
+				             isRolePermission(auth()->user()->role_id, 'Setting.View');
+			
+			/*$canViewAction = Auth::guard('admin')->user()->canany([
 				'Setting.Edit',
 				'Setting.Delete',
 				'Setting.View'
-			]);
+			]);*/
 
 			if ($result && $result->count() > 0) {
 				foreach ($result as $row) {
@@ -105,13 +135,16 @@ class SettingController extends Controller
 								</button>
 								<div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="social-app-dropdown-' . $row->id . '">
 									<div class="bg-white py-2">';
-						if (Auth::guard('admin')->user()->can('Setting.Edit')) {
+						if (isRolePermission(auth()->user()->role_id, 'Setting.Edit')) {
+						//if (Auth::guard('admin')->user()->can('Setting.Edit')) {
 							$action .= '<a class="dropdown-item text-warning" href="' . url('setting/' . $row->id . '/edit') . '"> <i class="fas fa-edit"></i> ' . __('index.edit') . ' </a>';
 						}
-						if (Auth::guard('admin')->user()->can('Setting.View')) {
+						if (isRolePermission(auth()->user()->role_id, 'Setting.View')) {
+						//if (Auth::guard('admin')->user()->can('Setting.View')) {
 							$action .= '<a class="dropdown-item" href="' . url('setting/' . $row->id) . '"> <i class="far fa-folder-open"></i> ' . __('index.view') . '</a>';
 						}
-						if (Auth::guard('admin')->user()->can('Setting.Delete')) {
+						if (isRolePermission(auth()->user()->role_id, 'Setting.Delete')) {
+						//if (Auth::guard('admin')->user()->can('Setting.Delete')) {
 							$action .= '<a class="dropdown-item btn-delete" style="cursor: pointer;" data-id="' . $row->id . '"> <i class="far fa-trash-alt"></i> ' . __('index.delete') . '</a>';
 						}
 						$action .= '</div></div></div></span>';

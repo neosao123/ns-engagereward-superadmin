@@ -42,17 +42,20 @@
     </h5>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-	   @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+	   @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+	   {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
         <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{__('index.dashboard')}}</a></li>
        @endif     
-       @if(Auth::guard('admin')->user()->can('Social Platform.List', 'admin'))	   
+       @if(isRolePermission(auth()->user()->role_id, 'Social Platform.List'))
+       {{-- @if(Auth::guard('admin')->user()->can('Social Platform.List', 'admin')) --}}
 	   <li class="breadcrumb-item"><a href="{{ url('/social-media-apps') }}" class="text-decoration-none text-dark">{{__('index.social_media_app')}}</a></li>
        @endif       
 	   <li class="breadcrumb-item active" aria-current="page">{{__('index.edit')}}</li>
       </ol>
     </nav>
   </div>
-  @if(Auth::guard('admin')->user()->can('Social Platform.List', 'admin'))
+  @if(isRolePermission(auth()->user()->role_id, 'Social Platform.List'))
+  {{-- @if(Auth::guard('admin')->user()->can('Social Platform.List', 'admin')) --}}
   <div class="col-auto ms-2 align-items-center">
     <a class="btn btn-falcon-default btn-sm me-1 mb-1" href="{{ url('social-media-apps') }}">
       <span class="px-2">{{ __('index.back') }}</span>

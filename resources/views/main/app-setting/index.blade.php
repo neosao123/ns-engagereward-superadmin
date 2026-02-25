@@ -23,7 +23,8 @@
           class="border position-absolute top-50 translate-middle-y w-100 start-0 z-index--1"></span></h5>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-			@if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+			@if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+			{{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
 			<li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{ __('index.dashboard') }}</a></li>
 			@endif
           <li class="breadcrumb-item active" aria-current="page">App Setting</li>
@@ -46,7 +47,8 @@
               <table id="dt-app-setting" class="table table-hover">
                 <thead>
                   <tr>
-				    @if(Auth::guard('admin')->user()->canany(['AppSetting.Edit']))
+				    @if(isRolePermission(auth()->user()->role_id, 'AppSetting.List'))
+				    {{-- @if(Auth::guard('admin')->user()->canany(['AppSetting.Edit'])) --}}
 				    <th scope="col">{{ __('index.action') }}</th>
 				    @endif
                     <th scope="col">Setting Name</th>

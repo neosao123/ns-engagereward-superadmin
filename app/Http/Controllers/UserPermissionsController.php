@@ -30,7 +30,33 @@ class UserPermissionsController extends Controller
     public function __construct()
     {
         // Only users with 'User.Permissions' or 'admin' permission can access index
-        $this->middleware('permission:User.Permissions,admin')->only(['index']);
+        // $this->middleware('permission:User.Permissions,admin')->only(['index']);
+
+        $this->middleware('auth'); // Ensure user is logged in
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::guard('admin')->user();
+
+            if (!$user) {
+                return $next($request);
+            }
+
+            $role_id = $user->role_id;
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'User.Permissions',
+                'setPermission' => 'User.Permissions',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!isRolePermission($role_id, $permissions[$action])) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+
+            return $next($request);
+        });
     }
     
     /**

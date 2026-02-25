@@ -175,10 +175,11 @@ class AuthController extends Controller
                     );
 
                     $role = Auth::guard('admin')->user()->role_id;
-                    if ($role == 1) {
+                    if (in_array($role, [1, 2])) {
                         return redirect('dashboard');
                     } else {
-                        if (Auth::guard('admin')->user()->can('Dashboard.View')) {
+                        if (isRolePermission($role, 'Dashboard.View')) {
+                        //if (Auth::guard('admin')->user()->can('Dashboard.View')) {
                             return redirect('dashboard');
                         } else {
                             return redirect('welcome');

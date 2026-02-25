@@ -39,13 +39,48 @@ class UserController extends Controller
     public function __construct()
     {
         //Permissions on methods
-        $this->middleware('permission:User.List,admin')->only(['index']);
-        $this->middleware('permission:User.Create,admin')->only(['create', 'store']);
-        $this->middleware('permission:User.View,admin')->only('show');
-        $this->middleware('permission:User.Edit,admin')->only(['edit', 'update']);
-        $this->middleware('permission:User.Delete,admin')->only('destroy');
-        $this->middleware('permission:User.Export,admin')->only(['excel_download', 'pdf_download']);
-        $this->middleware('permission:User.Block,admin')->only(['block_unblock_user']);
+        // $this->middleware('permission:User.List,admin')->only(['index']);
+        // $this->middleware('permission:User.Create,admin')->only(['create', 'store']);
+        // $this->middleware('permission:User.View,admin')->only('show');
+        // $this->middleware('permission:User.Edit,admin')->only(['edit', 'update']);
+        // $this->middleware('permission:User.Delete,admin')->only('destroy');
+        // $this->middleware('permission:User.Export,admin')->only(['excel_download', 'pdf_download']);
+        // $this->middleware('permission:User.Block,admin')->only(['block_unblock_user']);
+
+        $this->middleware('auth'); // Ensure user is logged in
+
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::guard('admin')->user();
+
+            if (!$this->user) {
+                return $next($request);
+            }
+
+            $role_id = $this->user->role_id;
+            $action = $request->route()->getActionMethod();
+
+            $permissions = [
+                'index' => 'User.List',
+                'list' => 'User.List',
+                'create' => 'User.Create',
+                'store' => 'User.Create',
+                'show' => 'User.View',
+                'edit' => 'User.Edit',
+                'update' => 'User.Edit',
+                'destroy' => 'User.Delete',
+                'excel_download' => 'User.Export',
+                'pdf_download' => 'User.Export',
+                'block_unblock_user' => 'User.Block',
+            ];
+
+            if (array_key_exists($action, $permissions)) {
+                if (!isRolePermission($role_id, $permissions[$action])) {
+                    abort(403, 'You do not have the required permissions to access this page.');
+                }
+            }
+
+            return $next($request);
+        });
     }
 
     /**
@@ -119,13 +154,19 @@ class UserController extends Controller
             $data = [];
             $srno = $offset + 1;
 
-            $canViewAction = Auth::guard('admin')->user()->canany([
+            $canViewAction = isRolePermission(auth()->user()->role_id, 'User.Edit') || 
+                             isRolePermission(auth()->user()->role_id, 'User.View') || 
+                             isRolePermission(auth()->user()->role_id, 'User.Delete') || 
+                             isRolePermission(auth()->user()->role_id, 'User.Permissions') || 
+                             isRolePermission(auth()->user()->role_id, 'User.Block');
+
+            /*$canViewAction = Auth::guard('admin')->user()->canany([
                 'User.Edit',
                 'User.View',
                 'User.Delete',
                 'User.Permissions',
                 'User.Block'
-            ]);
+            ]);*/
 
             if ($records->count() > 0) {
                 foreach ($records as $row) {
@@ -150,19 +191,24 @@ class UserController extends Controller
 									<div class="dropdown-menu dropdown-menu-end border py-0" aria-labelledby="user-dropdown-' . $row->id . '">
 										<div class="bg-white py-2">';
 
-                        if (Auth::guard('admin')->user()->can('User.View')) {
+                        if (isRolePermission(auth()->user()->role_id, 'User.View')) {
+                        //if (Auth::guard('admin')->user()->can('User.View')) {
                             $action .= '<a class="dropdown-item" href="' . url('users/' . $row->id) . '"> <i class="fas fa-eye"></i> View</a>';
                         }
-                        if (Auth::guard('admin')->user()->can('User.Edit')) {
+                        if (isRolePermission(auth()->user()->role_id, 'User.Edit')) {
+                        //if (Auth::guard('admin')->user()->can('User.Edit')) {
                             $action .= '<a class="dropdown-item btn-edit" href="' . url('users/' . $row->id . '/edit') . '"> <i class="fas fa-edit"></i> Edit</a>';
                         }
-                        if (Auth::guard('admin')->user()->can('User.Permissions')) {
-                            $action .= '<a class="dropdown-item" href="' . url('user/' . $row->id . '/permissions') . '"> <i class="fas fa-check-double"></i> Permissions</a>';
-                        }
-                        if (Auth::guard('admin')->user()->can('User.Delete')) {
+                       // if (isRolePermission(auth()->user()->role_id, 'User.Permissions')) {
+                        //if (Auth::guard('admin')->user()->can('User.Permissions')) {
+                           // $action .= '<a class="dropdown-item" href="' . url('user/' . $row->id . '/permissions') . '"> <i class="fas fa-check-double"></i> Permissions</a>';
+                        //}
+                        if (isRolePermission(auth()->user()->role_id, 'User.Delete')) {
+                        //if (Auth::guard('admin')->user()->can('User.Delete')) {
                             $action .= '<a class="dropdown-item btn-delete" style="cursor: pointer;" data-id="' . $row->id . '"> <i class="far fa-trash-alt"></i> Delete</a>';
                         }
-                        if (Auth::guard('admin')->user()->can('User.Block')) {
+                        if (isRolePermission(auth()->user()->role_id, 'User.Block')) {
+                        //if (Auth::guard('admin')->user()->can('User.Block')) {
                             if (empty($row->is_block)) {
                                 $action .= '<a class="dropdown-item btn-block" style="cursor: pointer;" data-id="' . $row->id . '" data-val="0"> <i class="fas fa-angle-up"></i> Block</a>';
                             } else {
@@ -307,7 +353,7 @@ class UserController extends Controller
                 $query->where('first_name', 'like', '%' . $search . '%')
                     ->orWhere('last_name', 'like', '%' . $search . '%');
             })
-                ->where('id', '!=', 1)
+                ->whereNotIn('role_id', [1, 2])
                 ->orderBy('id', 'DESC')
                 ->limit(20)
                 ->get();
@@ -561,13 +607,13 @@ class UserController extends Controller
 
 
             //give permissions to user other than admin
-            if ($request->role_id != 1) {
+            /*if ($request->role_id != 1) {
                 $permissions = Permission::where('id', "13")->first();
                 if ($permissions) {
                     $users = User::find($user->id);
                     $users->givePermissionTo($permissions);
                 }
-            }
+            }*/
             //permission ended
 
 

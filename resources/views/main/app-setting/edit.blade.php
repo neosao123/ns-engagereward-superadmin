@@ -21,11 +21,14 @@
     </h5>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-	   @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin'))
+	   @if(isRolePermission(auth()->user()->role_id, 'Dashboard.View'))
+	   {{-- @if(Auth::guard('admin')->user()->can('Dashboard.View', 'admin')) --}}
         <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}" class="text-decoration-none text-dark">{{__('index.dashboard')}}</a></li>
        @endif     
+        @if(isRolePermission(auth()->user()->role_id, 'AppSetting.List'))
 	   <li class="breadcrumb-item"><a href="{{ url('/app-settings/list') }}" class="text-decoration-none text-dark">App Setting</a></li>
-	   <li class="breadcrumb-item active" aria-current="page">{{__('index.edit')}}</li>
+	   @endif
+     <li class="breadcrumb-item active" aria-current="page">{{__('index.edit')}}</li>
       </ol>
     </nav>
   </div>

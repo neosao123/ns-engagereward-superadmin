@@ -79,13 +79,15 @@ class PermissionTableSeeder extends Seeder
                 }
 
                 // Give permission to User ID 1
-                $user = User::where('id', 1)->first();
+                $user = Role::where('id', 1)->first();
+                //$user = User::where('id', 1)->first();
                 if ($user && !$user->hasPermissionTo($permissionName, 'admin')) {
                     $user->givePermissionTo($permissionName);
                 }
 
                 // Give permission to User ID 2
-                $user = User::where('id', 2)->first();
+                //$user = User::where('id', 2)->first();
+                $user = Role::where('id', 2)->first();
                 if ($user && !$user->hasPermissionTo($permissionName, 'admin')) {
                     $user->givePermissionTo($permissionName);
                 }
