@@ -151,7 +151,7 @@ class AuthController extends Controller
                     return redirect('login');
                 }
 
-                if (Auth::guard('admin')->attempt(['email' => $email, 'password' => $password])) {
+                if (Auth::guard('admin')->attempt(['email' => $email, 'password' => $password,'deleted_at' => null])) {
                     Auth::login($result);
                     $r->session()->put('SUPERUSER_LOGIN', true);
 
@@ -175,6 +175,8 @@ class AuthController extends Controller
                     );
 
                     $role = Auth::guard('admin')->user()->role_id;
+
+                    
                     if (in_array($role, [1, 2])) {
                         return redirect('dashboard');
                     } else {
