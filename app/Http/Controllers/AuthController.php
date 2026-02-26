@@ -296,7 +296,9 @@ class AuthController extends Controller
     {
         try {
             $email = $r->input('email');
-            $result = User::where("email", $email)->first();
+            $result = User::where("email", $email)
+                      ->whereNull("deleted_at")
+                      ->first();
 
             if ($result) {
                 // Generate reset token
