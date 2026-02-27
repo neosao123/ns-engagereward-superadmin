@@ -36,6 +36,7 @@ class AuthController extends Controller
 
     public function index(Request $r)
     {
+       
         try {
             // Check if admin is already authenticated
             if (Auth::guard('admin')->check()) {
