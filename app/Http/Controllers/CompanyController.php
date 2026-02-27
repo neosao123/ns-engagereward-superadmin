@@ -305,6 +305,7 @@ class CompanyController extends Controller
 
             $result = Company::where('phone', 'like', '%' . $search . '%')
                 ->whereNull("deleted_at")
+                ->where("phone","!=","")
                 ->orderBy('id', 'DESC')
                 ->limit(20)
                 ->get();
@@ -1202,32 +1203,43 @@ class CompanyController extends Controller
     public function add_document_info(Request $r)
     {
         $rules = [
-            'documents' => [
-                'required',
-                'array',
-                function ($attribute, $value, $fail) use ($r) {
-                    // Check if at least one document has an uploaded file
-                    $hasFile = collect($r->documents ?? [])->contains(function ($doc) {
-                        return isset($doc['file']) && $doc['file'] instanceof \Illuminate\Http\UploadedFile;
-                    });
+        'documents' => [
+            'required',
+            'array',
+            function ($attribute, $value, $fail) use ($r) {
+                // Check if at least one document has an uploaded file
+                $hasFile = collect($r->documents ?? [])->contains(function ($doc) {
+                    return isset($doc['file']) && $doc['file'] instanceof \Illuminate\Http\UploadedFile;
+                });
 
-                    if (!$hasFile) {
-                        $fail('At least one document is required.');
-                    }
-                },
-            ],
-            'documents.*.type' => 'nullable|string|max:255',
-            'documents.*.number' => 'nullable|string|max:255',
-            'documents.*.file' => [
-                'nullable',
-                'file',
-                'mimes:jpg,jpeg,png,pdf',
-                'max:2048'
-            ]
-        ];
+                if (!$hasFile) {
+                    $fail('At least one document is required.');
+                }
+            },
+        ],
+        'documents.0.type' => 'required|string|max:255',
+        'documents.0.number' => 'required|string|max:255',
+        'documents.0.file' => [
+            'required',
+            'file',
+            'mimes:jpg,jpeg,png,pdf',
+            'max:2048'
+        ],
+        'documents.*.type' => 'nullable|string|max:255',
+        'documents.*.number' => 'nullable|string|max:255',
+        'documents.*.file' => [
+            'nullable',
+            'file',
+            'mimes:jpg,jpeg,png,pdf',
+            'max:2048'
+        ]
+    ];
 
-        $messages = [
-            'documents.required' => 'Please upload at least one document.',
+    $messages = [
+        'documents.required' => 'Please upload at least one document.',
+        'documents.0.type.required' => 'The first document type is required.',
+        'documents.0.number.required' => 'The first document number is required.',
+        'documents.0.file.required' => 'The first document file is required.',
             'documents.*.type.string' => 'Document type must be text.',
             'documents.*.type.max' => 'Document type cannot exceed 255 characters.',
             'documents.*.number.string' => 'Document number must be text.',
@@ -1244,13 +1256,18 @@ class CompanyController extends Controller
 
         try {
             // Store documents in session
-            if ($r->has('documents')) {
-                $documentsData = [];
-                foreach ($r->documents as $document) {
-                    $docData = [
-                        'type' => $document['type'] ?? null,
-                        'number' => $document['number'] ?? null,
-                    ];
+        if ($r->has('documents')) {
+            $documentsData = [];
+            foreach ($r->documents as $document) {
+                // Skip empty entries
+                if (empty($document['type']) && empty($document['number']) && empty($document['file'])) {
+                    continue;
+                }
+
+                $docData = [
+                    'type' => $document['type'] ?? null,
+                    'number' => $document['number'] ?? null,
+                ];
 
                     if (isset($document['file']) && $document['file'] instanceof \Illuminate\Http\UploadedFile) {
                         $file = $document['file'];
@@ -2096,38 +2113,56 @@ class CompanyController extends Controller
     public function update_document_info(Request $r)
     {
         $rules = [
-            'documents' => [
-                'required',
-                'array',
-                function ($attribute, $value, $fail) use ($r) {
-                    // Check if at least one document is uploaded OR already exists
-                    $hasDocument = collect($r->documents ?? [])->contains(function ($doc) {
-                        return (
-                            (isset($doc['file']) && $doc['file'] instanceof \Illuminate\Http\UploadedFile)
-                            || !empty($doc['existing_file'])
-                        );
-                    });
+        'documents' => [
+            'required',
+            'array',
+            function ($attribute, $value, $fail) use ($r) {
+                // Check if at least one document is uploaded OR already exists
+                $hasDocument = collect($r->documents ?? [])->contains(function ($doc) {
+                    return (
+                        (isset($doc['file']) && $doc['file'] instanceof \Illuminate\Http\UploadedFile)
+                        || !empty($doc['existing_file'])
+                    );
+                });
 
-                    if (!$hasDocument) {
-                        $fail('At least one document is required.');
-                    }
-                },
-            ],
-            'documents.*.id' => 'nullable',
-            'documents.*.type' => 'nullable|string|max:255',
-            'documents.*.number' => 'nullable|string|max:255',
-            'documents.*.file' => [
-                'nullable',
-                'file',
-                'mimes:jpg,jpeg,png,pdf',
-                'max:2048'
-            ],
-            'documents.*.existing_file' => 'nullable|string'
-        ];
+                if (!$hasDocument) {
+                    $fail('At least one document is required.');
+                }
+            },
+        ],
+        'documents.0.type' => 'required|string|max:255',
+        'documents.0.number' => 'required|string|max:255',
+        'documents.0.file' => [
+            function ($attribute, $value, $fail) use ($r) {
+                $hasFile = isset($r->documents[0]['file']) && $r->documents[0]['file'] instanceof \Illuminate\Http\UploadedFile;
+                $hasExisting = !empty($r->documents[0]['existing_file']);
+                
+                if (!$hasFile && !$hasExisting) {
+                    $fail('The document file is required.');
+                }
+            },
+            'nullable',
+            'file',
+            'mimes:jpg,jpeg,png,pdf',
+            'max:2048'
+        ],
+        'documents.*.id' => 'nullable',
+        'documents.*.type' => 'nullable|string|max:255',
+        'documents.*.number' => 'nullable|string|max:255',
+        'documents.*.file' => [
+            'nullable',
+            'file',
+            'mimes:jpg,jpeg,png,pdf',
+            'max:2048'
+        ],
+        'documents.*.existing_file' => 'nullable|string'
+    ];
 
         $messages = [
-            'documents.*.type.string' => 'Document type must be text.',
-            'documents.*.type.max' => 'Document type cannot exceed 255 characters.',
+        'documents.0.type.required' => 'The first document type is required.',
+        'documents.0.number.required' => 'The first document number is required.',
+        'documents.*.type.string' => 'Document type must be text.',
+        'documents.*.type.max' => 'Document type cannot exceed 255 characters.',
             'documents.*.number.string' => 'Document number must be text.',
             'documents.*.number.max' => 'Document number cannot exceed 255 characters.',
             'documents.*.file.mimes' => 'Only JPG, JPEG, PNG and PDF files are allowed.',
@@ -2143,14 +2178,19 @@ class CompanyController extends Controller
         try {
             $documentsData = [];
 
-            if ($r->has('documents')) {
-                foreach ($r->documents as $document) {
-                    $docData = [
-                        'id' => $document['id'] ?? null,
-                        'type' => $document['type'] ?? null,
-                        'number' => $document['number'] ?? null,
-                        'file_path' => $document['existing_file'] ?? null
-                    ];
+        if ($r->has('documents')) {
+            foreach ($r->documents as $document) {
+                // Skip empty entries
+                if (empty($document['type']) && empty($document['number']) && empty($document['file']) && empty($document['existing_file'])) {
+                    continue;
+                }
+
+                $docData = [
+                    'id' => $document['id'] ?? null,
+                    'type' => $document['type'] ?? null,
+                    'number' => $document['number'] ?? null,
+                    'file_path' => $document['existing_file'] ?? null
+                ];
 
                     if (isset($document['file']) && $document['file'] instanceof \Illuminate\Http\UploadedFile) {
                         $file = $document['file'];

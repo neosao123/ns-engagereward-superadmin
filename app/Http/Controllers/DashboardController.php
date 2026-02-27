@@ -62,6 +62,7 @@ class DashboardController extends Controller
     public function index( Request $r ) {
 		
 		try{
+		
 			$admin = Auth::guard('admin')->user();
 
 			// Check permissions

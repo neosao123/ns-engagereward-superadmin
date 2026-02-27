@@ -27,26 +27,26 @@
 
                             <!-- Document Type -->
                             <div class="col-md-4 mb-2">
-                                <label class="form-label">{{ __('index.document_type') }}</label>
+                                <label class="form-label">{{ __('index.document_type') }} @if($index == 0)<span class="text-danger">*</span>@endif</label>
                                 <input type="text" class="form-control document-type"
                                     name="documents[{{ $index }}][type]"
                                     value="{{ old("documents.$index.type", $document['type'] ?? '') }}"
-                                    placeholder="e.g. COI, PAN etc.">
+                                    placeholder="e.g. COI, PAN etc." {{ $index == 0 ? 'required' : '' }}>
                             </div>
 
                             <!-- Document Number -->
                             <div class="col-md-4 mb-2">
-                                <label class="form-label">{{ __('index.document_number') }}</label>
+                                <label class="form-label">{{ __('index.document_number') }} @if($index == 0)<span class="text-danger">*</span>@endif</label>
                                 <input type="text" class="form-control document-number"
                                     name="documents[{{ $index }}][number]"
-                                    value="{{ old("documents.$index.number", $document['number'] ?? '') }}">
+                                    value="{{ old("documents.$index.number", $document['number'] ?? '') }}" {{ $index == 0 ? 'required' : '' }}>
                             </div>
 
                             <!-- Document File -->
                             <div class="col-md-3 mb-2">
-                                <label class="form-label">{{ __('index.document_file') }}</label>
+                                <label class="form-label">{{ __('index.document_file') }} @if($index == 0)<span class="text-danger">*</span>@endif</label>
                                 <input type="file" class="form-control document-file"
-                                    name="documents[{{ $index }}][file]" accept=".pdf,.jpg,.jpeg,.png">
+                                    name="documents[{{ $index }}][file]" accept=".pdf,.jpg,.jpeg,.png" {{ $index == 0 && empty($document['file_path']) ? 'required' : '' }}>
 
                                 <!-- Hidden field for existing file -->
                                 <input type="hidden" name="documents[{{ $index }}][existing_file]"
