@@ -50,7 +50,7 @@
                         </li>
                         @endif
                         {{-- @endhaspermission --}}
-                        @if(auth()->user()->role_id == 1)
+                         @if(auth()->user()->role_id == 1 || auth()->user()->role_id == 2)
                         {{-- @haspermission('PermissionGroup.List', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/configuration/permission-groups') }}" data-bs-toggle="" aria-expanded="false">
@@ -61,7 +61,7 @@
                         </li>
                         @endif
                         {{-- @endhaspermission --}}
-                        @if(auth()->user()->role_id == 1) 
+                        @if(auth()->user()->role_id == 1 || auth()->user()->role_id == 2)
                         {{-- @haspermission('Permissions.List', 'admin') --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/configuration/permissions') }}" data-bs-toggle="" aria-expanded="false">
