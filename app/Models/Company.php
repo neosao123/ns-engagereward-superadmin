@@ -80,13 +80,13 @@ class Company extends Model
 			$query->where('id', $company_key);
 		}
 		if ($company_name !== "") {
-			$query->where('id', 'like', "%{$company_name}%");
+			$query->where('id', $company_name);
 		}
 		if ($email !== "") {
-			$query->where('id', 'like', "%{$email}%");
+			$query->where('id', $email);
 		}
 		if ($phone !== "") {
-			$query->where('id', 'like', "%{$phone}%");
+			$query->where('id', $phone);
 		}
 
 		if ($search !== "") {
@@ -95,7 +95,8 @@ class Company extends Model
 				  ->orWhere('company_name', 'like', "%{$search}%")
                   ->orWhere('company_code', 'like', "%{$search}%")
 				  ->orWhere('email', 'like', "%{$search}%")
-				  ->orWhere('phone', 'like', "%{$search}%");
+				  ->orWhere('phone', 'like', "%{$search}%")
+				  ->orWhere('primary_contact_number', 'like', "%{$search}%");
 			});
 		}
 
