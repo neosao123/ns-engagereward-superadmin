@@ -305,15 +305,25 @@ class CompanyController extends Controller
             $html = [];
             $search = $r->input('search');
 
-            $result = Company::where('phone', 'like', '%' . $search . '%')
+            $result = Company::where(function($q) use ($search) {
+                    $q->where('phone', 'like', '%' . $search . '%')
+                      ->orWhere('primary_contact_number', 'like', '%' . $search . '%');
+                })
                 ->whereNull("deleted_at")
-                ->where("phone","!=","")
+                ->where(function($q) {
+                    $q->where("phone", "!=", "")
+                      ->orWhere("primary_contact_number", "!=", "");
+                })
                 ->orderBy('id', 'DESC')
                 ->limit(20)
                 ->get();
 
             foreach ($result as $item) {
-                $html[] = ['id' => $item->id, 'text' => $item->phone];
+                $text = $item->phone;
+                if ($item->primary_contact_number && $item->primary_contact_number != $item->phone) {
+                    $text .= ($item->phone ? " / " : "") . $item->primary_contact_number;
+                }
+                $html[] = ['id' => $item->id, 'text' => $text];
             }
 
             return response()->json($html);

@@ -96,7 +96,7 @@ Route::group(['middleware' => ['PreventBack']], function () {
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-    Route::group(['middleware' => ['admin']], function () {
+    Route::group(['middleware' => ['admin', 'check_user_status']], function () {
 
         Route::get('/welcome', [DashboardController::class, 'welcome']);
         Route::get("/dashboard", [DashboardController::class, 'index']);
