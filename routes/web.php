@@ -25,6 +25,7 @@ use App\Http\Controllers\SocialMedia\InstagramSettingController;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Http\Controllers\AppSettingController;
+use App\Http\Controllers\InstagramController as InstagramAuthController;
 
 
 /*
@@ -38,6 +39,8 @@ use App\Http\Controllers\AppSettingController;
 |
 */
 
+Route::get('/social/auth/facebook/redirect', [InstagramAuthController::class, 'redirect']);
+Route::get('/social/auth/facebook/callback', [InstagramAuthController::class, 'callback']);
 
 Route::get('/', function () {
     return view('login');
@@ -200,6 +203,8 @@ Route::group(['middleware' => ['PreventBack']], function () {
             Route::post('store-integration-credentials', [CompanyController::class, 'store_integration_credentials']);
             Route::delete('integration-credentials/{id}', [CompanyController::class, 'integration_credential_delete']);
             Route::post('update-status/{id}', [CompanyController::class, 'update_status']);
+            Route::post('confirm-password-integration', [CompanyController::class, 'confirm_password_integration']);
+            Route::get('get-integration-keys', [CompanyController::class, 'get_integration_keys']);
             Route::get('suggest-code', [CompanyController::class, 'suggest_code']);
             Route::get('exceldownload', [CompanyController::class, 'excel_download']);
             Route::get('pdfdownload', [CompanyController::class, 'pdf_download']);

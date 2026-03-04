@@ -9,7 +9,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Response;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +33,9 @@ use Illuminate\Support\Str;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\NumberParseException;
 use App\Models\SubscriptionPurchase;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use GuzzleHttp\Exception\RequestException;
 
 use App\Traits\HandlesAdminApiRequests;
 use App\Traits\HandlesApiResponses;
@@ -2562,6 +2564,7 @@ class CompanyController extends Controller
     public function add_integration_credentials(Request $r, $companyId)
     {
         try {
+            $company = Company::findOrFail($companyId);
             $getSocialDetails = $this->social_information($companyId);
 
             // Get all active credentials for this company (without filtering by social_media_id)
@@ -2572,8 +2575,8 @@ class CompanyController extends Controller
                     return [
                         'id' => $cred->id,
                         'type' => $cred->type,
-                        'value' => $cred->value,
-                        'social_media_id' => $cred->social_media_id // Add this key
+                        'value' => '******', // Uniform mask
+                        'social_media_id' => $cred->social_media_id
                     ];
                 })
                 ->toArray();
@@ -2582,6 +2585,7 @@ class CompanyController extends Controller
                 'credentials' => $credentials, // Pass full credentials array
                 'getSocialDetails' => $getSocialDetails,
                 'companyId' => $companyId,
+                'company' => $company,
             ]);
         } catch (\Exception $exception) {
             LogHelper::logError(
@@ -2625,11 +2629,21 @@ class CompanyController extends Controller
             $socialMediaId = $request->input('social_media_id');
 
             foreach ($request->integration_credentials as $credential) {
+                $value = $credential['value'];
+
+                // If value is still masked, don't update it
+                if ($value === '******') {
+                    continue;
+                }
+
+                // Encrypt everything for security
+                $value = encryptData($value);
+
                 $data = [
                     'company_id' => $companyId,
                     'social_media_id' => $socialMediaId,
                     'type' => $credential['type'],
-                    'value' => $credential['value'],
+                    'value' => $value,
                     'is_active' => true,
                     'updated_at' => now(),
                 ];
@@ -2740,6 +2754,66 @@ class CompanyController extends Controller
                 'message' => 'An error occurred while deleting the credential'
             ], 500);
         }
+    }
+
+
+    public function confirm_password_integration(Request $request)
+    {
+        $request->validate([
+            'password' => 'required'
+        ]);
+
+        $admin = Auth::guard('admin')->user();
+
+        if (!Hash::check($request->password, $admin->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Incorrect password'
+            ], 422);
+        }
+
+        // Store confirmation timestamp in session
+        Session::put('integration_access_confirmed_at', Carbon::now());
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    public function get_integration_keys(Request $request)
+    {
+        $confirmedAt = session('integration_access_confirmed_at');
+
+        if (!$confirmedAt || now()->diffInMinutes($confirmedAt) > 10) {
+            return response()->json([
+                'success' => false,
+                'expired' => true,
+                'message' => 'Password confirmation expired'
+            ], 403);
+        }
+
+        $companyId = $request->input('company_id');
+        $socialMediaId = $request->input('social_media_id');
+
+        $credentials = IntegrationCredential::where('company_id', $companyId)
+            ->where('social_media_id', $socialMediaId)
+            ->where('is_active', 1)
+            ->get();
+
+        $data = $credentials->map(function ($cred) {
+            // Decrypt value, fallback to original if decryption fails (for older plain-text records)
+            $value = decryptData($cred->value) ?? $cred->value;
+
+            return [
+                'id' => $cred->id,
+                'value' => $value
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'credentials' => $data
+        ]);
     }
 
 
