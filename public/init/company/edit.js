@@ -323,7 +323,7 @@ $(function () {
                     $('#preview_img').attr('src', img.src);
                     $('#logo_preview').removeClass('d-none').show();
                     $('#error_message').hide();
-                    $("#remove_image").hide();
+                    $("#remove_image").show();
 
                     // Validate dimensions (for landscape image)
                     /*if (width !== 512 || height !== 512) {
@@ -410,10 +410,8 @@ $(function () {
                                     $('#company_logo').val(''); // Clear the file input
                                     $('#preview_img').attr('src', '#'); // Reset the image source to #
                                     $('#logo_preview').addClass('d-none'); // Hide the preview div with d-none
+                                    $('input[name="existing_company_logo"]').val('');
                                     toast('Image deleted successfully.', 'success');
-                                    setTimeout(() => {
-                                        window.location.href = `${baseUrl}/company`
-                                    }, 2000);
                                 } else {
                                     toast('Failed to delete the image.', 'error');
                                 }
