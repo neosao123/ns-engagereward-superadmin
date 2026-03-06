@@ -32,6 +32,7 @@ use PDF;
 use Illuminate\Support\Str;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\NumberParseException;
+use Illuminate\Support\Facades\Log;
 use App\Models\SubscriptionPurchase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
@@ -2669,31 +2670,37 @@ class CompanyController extends Controller
             }
 
             // Sync with Instance API
-            $supportedApps = [
-                1 => 'config/instagram/update',
-                2 => 'config/facebook/update',
-                3 => 'config/linkedin/update',
-                5 => 'config/twitter/update',
-                7 => 'config/youtube/update',
+            $platformEndpoints = [
+                1 => '/config/instagram/update',
+                2 => '/config/facebook/update',
+                3 => '/config/linkedin/update',
+                5 => '/config/twitter/update',
+                7 => '/config/youtube/update',
             ];
 
-            if (array_key_exists($socialMediaId, $supportedApps)) {
+            if (isset($platformEndpoints[$socialMediaId])) {
                 $company = Company::find($companyId);
                 if ($company && $company->company_unique_code) {
-                    $endpoint = $supportedApps[$socialMediaId];
-                    $fullEndpoint = strtolower($company->company_unique_code) . '/api/' . env('API_VERSION', 'v1') . '/' . $endpoint;
+                    $endpoint = $platformEndpoints[$socialMediaId];
+                    $fullEndpoint = strtolower($company->company_unique_code) . '/api/' . env('API_VERSION', 'v1') . $endpoint;
 
                     $apiData = [];
                     foreach ($request->integration_credentials as $credential) {
                         if ($credential['value'] === '******') continue;
 
                         $type = $credential['type'];
-                        if ($type == 'App ID') $apiData['app_id'] = $credential['value'];
-                        if ($type == 'App Secret') $apiData['app_secret'] = $credential['value'];
+                        if ($type == 'App ID') $apiData['app_id'] = encryptData($credential['value']);
+                        if ($type == 'App Secret') $apiData['app_secret'] = encryptData($credential['value']);
+                        if ($type == 'Callback URL') $apiData['callback_url'] = encryptData($credential['value']);
                     }
 
                     if (!empty($apiData)) {
-                        $this->makeSecurePostApiRequest($fullEndpoint, $apiData);
+                        try {
+                            $this->makeSecurePostApiRequest($fullEndpoint, $apiData);
+                        } catch (\Exception $e) {
+                            // Log but don't fail the main request if instance sync fails
+                            Log::warning("Failed to sync credentials to instance: " . $e->getMessage());
+                        }
                     }
                 }
             }
