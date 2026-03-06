@@ -140,7 +140,8 @@
             </div>
 
             <div class="card-footer bg-light text-end">
-                <button class="btn btn-primary submit-btn" type="button" data-social-id="{{ $socialMedia['id'] }}">
+                <button class="btn btn-primary submit-btn" type="button" data-social-id="{{ $socialMedia['id'] }}" 
+                        @if(count($socialCredentials) > 0) style="display: none;" @endif>
                     {{ __('index.save') }}
                 </button>
                 <button class="btn btn-dark" type="button" onclick="window.location.reload();">{{ __('index.reset') }}</button>
@@ -238,7 +239,9 @@
                             $input.data('original-value', item.value);
                         });
                         // Disable show button for this card
-                        $('.btn-show-hidden[data-social-id="' + socialId + '"]').prop('disabled', true);
+                        $('.btn-show-hidden[data-social-id="' + socialId + '"]').hide();
+                        // Show the submit button
+                        $('.submit-btn[data-social-id="' + socialId + '"]').show();
                     }
                 },
                 error: function(xhr) {

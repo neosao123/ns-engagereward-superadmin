@@ -2668,6 +2668,36 @@ class CompanyController extends Controller
                 }
             }
 
+            // Sync with Instance API
+            $supportedApps = [
+                1 => 'config/instagram/update',
+                2 => 'config/facebook/update',
+                3 => 'config/linkedin/update',
+                5 => 'config/twitter/update',
+                7 => 'config/youtube/update',
+            ];
+
+            if (array_key_exists($socialMediaId, $supportedApps)) {
+                $company = Company::find($companyId);
+                if ($company && $company->company_unique_code) {
+                    $endpoint = $supportedApps[$socialMediaId];
+                    $fullEndpoint = strtolower($company->company_unique_code) . '/api/' . env('API_VERSION', 'v1') . '/' . $endpoint;
+
+                    $apiData = [];
+                    foreach ($request->integration_credentials as $credential) {
+                        if ($credential['value'] === '******') continue;
+
+                        $type = $credential['type'];
+                        if ($type == 'App ID') $apiData['app_id'] = $credential['value'];
+                        if ($type == 'App Secret') $apiData['app_secret'] = $credential['value'];
+                    }
+
+                    if (!empty($apiData)) {
+                        $this->makeSecurePostApiRequest($fullEndpoint, $apiData);
+                    }
+                }
+            }
+
             DB::commit();
 
             return response()->json([
