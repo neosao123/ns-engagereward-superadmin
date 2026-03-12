@@ -7,14 +7,13 @@ use App\Models\CompanyDatabase;
 use App\Models\Company;
 use App\Models\SiteSetupStep;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\CompanySocialMediaSetting;
 use App\Models\SubscriptionPurchase;
 use Illuminate\Support\Facades\Hash;
 use Mail;
-use App\Models\User;
+use App\Models\Template;
 
 class OnboardingController extends Controller
 {
@@ -405,19 +404,48 @@ class OnboardingController extends Controller
 
 
                 if ($company->email != "") {
-                    try{
+                    try {
                         $email = $company->email;
                         $company_url = env('ADMIN_API_URL') . strtolower($company->company_unique_code);
+                        
+                        // Fetch Template ID 1
+                        $template = Template::find(1);
+                        $templateContent = null;
+
+                        if ($template) {
+                            $templateContent = $template->description;
+                            $search = [
+                                '#name#', 
+                                '#company-code#', 
+                                '#url#', 
+                                '#email#', 
+                                '#password#', 
+                                '#app-name#', 
+                                '#support-mail#'
+                            ];
+                            $replace = [
+                                $company->company_name, // You might use contact name here if available
+                                $company->company_code,
+                                $company_url,
+                                $company->email,
+                                'password@123',
+                                config('app.name'),
+                                env('SUPPORT_MAIL')
+                            ];
+                            $templateContent = str_replace($search, $replace, $templateContent);
+                        }
+
                         $details = [
                             'title' => 'Mail from EngageReward',
                             'url' => $company_url,
                             'name' => $company->company_name,
-                            'company_code'=>$company->company_code,
+                            'company_code' => $company->company_code,
                             'user_id' => $company->email,
-                            'password' => 'password@123'
+                            'password' => 'password@123',
+                            'template_content' => $templateContent
                         ];
                         Mail::to($email)->send(new \App\Mail\CompanyEmail($details));
-                    }catch (\Throwable $mailException) {
+                    } catch (\Throwable $mailException) {
 
                         Log::error('Mail Error', [
                             'company_id' => $company->id,

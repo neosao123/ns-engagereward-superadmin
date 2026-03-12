@@ -5,9 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use App\Models\User;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class PermissionTableSeeder extends Seeder
 {
@@ -66,6 +63,11 @@ class PermissionTableSeeder extends Seeder
             ['id' => 46, 'name' => 'AppSetting.Edit', 'guard_name' => 'admin', 'group_id' => 13],
             ['id' => 47, 'name' => 'InstagramSetting.Edit', 'guard_name' => 'admin', 'group_id' => 14],
             ['id' => 48, 'name' => 'Role.Role-Permission', 'guard_name' => 'admin', 'group_id' => 1],
+            ['id' => 49, 'name' => 'Template.List', 'guard_name' => 'admin', 'group_id' => 15],
+            ['id' => 50, 'name' => 'Template.Create', 'guard_name' => 'admin', 'group_id' => 15],
+            ['id' => 51, 'name' => 'Template.Edit', 'guard_name' => 'admin', 'group_id' => 15],
+            ['id' => 52, 'name' => 'Template.Delete', 'guard_name' => 'admin', 'group_id' => 15],
+            ['id' => 53, 'name' => 'Template.View', 'guard_name' => 'admin', 'group_id' => 15],
         ];
 
         try {

@@ -149,6 +149,20 @@
                 @endif
                 {{-- @endhaspermission --}}
 
+                @if(isRolePermission(auth()->user()->role_id, 'Template.List'))
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('templates') }}" role="button" data-bs-toggle="" aria-expanded="false">
+                        <div class="d-flex align-items-center">
+                            <span class="nav-link-icon">
+                                <span class="fas fa-file-alt"></span>
+                            </span>
+                            <span class="nav-link-text ps-1"> Template Master</span>
+                        </div>
+                    </a>
+                </li>
+                @endif
+                {{-- @endhaspermission --}}
+
                 @if(isRolePermission(auth()->user()->role_id, 'MetaSetting.Edit') || isRolePermission(auth()->user()->role_id, 'InstagramSetting.Edit'))
                 {{-- @canany(['MetaSetting.Edit', 'InstagramSetting.Edit']) --}}
                 <li class="nav-item">
