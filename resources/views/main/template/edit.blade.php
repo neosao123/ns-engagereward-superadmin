@@ -62,7 +62,7 @@
                         <span class="error" id="description_error"></span>
                     </div>
 
-                    <input type="hidden" name="is_active" value="1">
+                 
 
                     <div class="mt-4">
                         <button class="btn btn-primary" type="submit" id="btnUpdate">Update</button>

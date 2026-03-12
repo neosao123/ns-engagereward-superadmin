@@ -59,9 +59,6 @@
                         <span class="error" id="description_error"></span>
                     </div>
 
-                    <input type="hidden" name="is_active" value="1">
-
-                    <div class="mt-4">
                         <button class="btn btn-primary" type="submit" id="btnSubmit">Save</button>
                         <button type="button" class="btn btn-info" id="btnPreview">Preview</button>
                     </div>
