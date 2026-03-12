@@ -62,13 +62,7 @@
                         <span class="error" id="description_error"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" name="is_active">
-                            <option value="1" {{ $template->is_active == 1 ? 'selected' : '' }}>Active</option>
-                            <option value="0" {{ $template->is_active == 0 ? 'selected' : '' }}>Inactive</option>
-                        </select>
-                    </div>
+                    <input type="hidden" name="is_active" value="1">
 
                     <div class="mt-4">
                         <button class="btn btn-primary" type="submit" id="btnUpdate">Update</button>
