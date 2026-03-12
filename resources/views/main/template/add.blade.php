@@ -59,15 +59,6 @@
                         <span class="error" id="description_error"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" name="is_active">
-                            <option value="1">Active</option>
-                            <option value="0">Inactive</option>
-                        </select>
-                    </div>
-
-                    <div class="mt-4">
                         <button class="btn btn-primary" type="submit" id="btnSubmit">Save</button>
                         <button type="button" class="btn btn-info" id="btnPreview">Preview</button>
                     </div>

@@ -156,7 +156,7 @@
                             <span class="nav-link-icon">
                                 <span class="fas fa-file-alt"></span>
                             </span>
-                            <span class="nav-link-text ps-1"> Template Master</span>
+                            <span class="nav-link-text ps-1"> Template</span>
                         </div>
                     </a>
                 </li>

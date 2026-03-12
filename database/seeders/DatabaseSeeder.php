@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             PermissionGroupsTableSeeder::class,
             PermissionTableSeeder::class,
             SocialMediaAppsTableSeeder::class,
-            CountrySeeder::class
+            CountrySeeder::class,
+            TemplateSeeder::class
         ]);
     }
 }
