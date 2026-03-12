@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Template;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -308,11 +309,23 @@ class AuthController extends Controller
                 $token = $this->random_characters(5) . date('Hdm');
                 $sendLink = url('verify-token/' . $token);
 
+                // Get template ID 11
+                $template = Template::find(11);
+                $emailBody = $template ? $template->description : __('index.reset_email_body');
+
+                // Replace placeholders
+                $emailBody = str_replace('#name#', ucfirst($result->first_name), $emailBody);
+                $emailBody = str_replace('#url#', $sendLink, $emailBody);
+                $emailBody = str_replace('#support-mail#', env('SUPPORT_MAIL'), $emailBody);
+                $emailBody = str_replace('#app-name#', env('APP_NAME'), $emailBody);
+
                 // Prepare email content
                 $details = [
                     'username' => $result->first_name,
                     'title' => 'Mail from EngageReward',
                     'link' => $sendLink,
+                    'body' => $emailBody,
+                    'subject' => ($template && $template->subtitle) ? $template->subtitle : 'Reset Your Engage Reward Password'
                 ];
 
                 // Send email

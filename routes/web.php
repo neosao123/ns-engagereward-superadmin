@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Http\Controllers\AppSettingController;
 use App\Http\Controllers\InstagramController as InstagramAuthController;
+use App\Http\Controllers\TemplateController;
 
 
 /*
@@ -242,6 +243,15 @@ Route::group(['middleware' => ['PreventBack']], function () {
         });
 
         Route::resource('company', CompanyController::class);
+
+        /** --------------------------------------------------------------------------------------------------
+         * template master
+         * --------------------------------------------------------------------------------------------------- */
+        Route::group(['prefix' => 'templates'], function () {
+            Route::get('list', [TemplateController::class, 'list']);
+            Route::get('preview', [TemplateController::class, 'preview']);
+        });
+        Route::resource('templates', TemplateController::class);
 
         /** --------------------------------------------------------------------------------------------------
          * setting

@@ -1,7 +1,5 @@
 <?php
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\Api\V1\OnboardingController;
 use App\Http\Controllers\Api\V1\BookdemoController;
@@ -10,6 +8,7 @@ use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\ConfigDetailController;
+use App\Http\Controllers\Api\V1\TemplateController;
 
 Route::get('/config-details', [ConfigDetailController::class, 'config_details']);
 
@@ -24,6 +23,7 @@ Route::post('/reset-password', [AuthController::class, 'reset_password']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/company-update', [CompanyController::class, 'update_company_details']);
 Route::post('/company-logo-delete', [CompanyController::class, 'update_company_logo']);
+Route::post('/get-template-details', [TemplateController::class, 'get_template_details']);
 
 //App version
 Route::get('/version/update', [AuthController::class, 'update_version']);

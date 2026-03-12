@@ -25,7 +25,7 @@ class ForgotAdminEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reset Your Engage Reward Password',
+            subject: $this->details['subject'] ?? 'Reset Your Engage Reward Password',
         );
     }
 
@@ -51,6 +51,6 @@ class ForgotAdminEmail extends Mailable
 
     public function build()
     {
-        return $this->subject('Reset Your Engage Reward Password')->view('layout.auth.forgot');
+        return $this->subject($this->details['subject'] ?? 'Reset Your Engage Reward Password')->view('layout.auth.forgot');
     }
 }

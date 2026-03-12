@@ -23,24 +23,7 @@
 </head>
 
 <body>
-    <p style="color: #000000 !important;">{{ __('index.hey') }} {{ ucfirst($details['username']) }} &#128075;</p>
-
-    <p style="color: #000000 !important;">{{ __('index.req_password') }}</p>
-    <p style="color: #000000 !important;">&#128274; {{ __('index.expire_link') }}</p>
-    <p><a href="{{ $details['link'] }}" target="_blank" style="text-align: center;">
-            {{ __('index.reset_my_password') }}
-        </a>
-    </p>
-    <p style="color: #000000 !important;">
-        Didn’t request this? Just ignore this email or contact us at
-        <a href="mailto:{{ env('SUPPORT_MAIL') }}">
-            {{ env('SUPPORT_MAIL') }}
-        </a>.
-    </p>
-    <p style="color: #000000 !important;">{{ __('index.cheers') }}, <br>{{ __('index.team') }}
-        {{ config('app.name') }}
-        &#128153;</p>
-
+    {!! $details['body'] !!}
 </body>
 
 </html>

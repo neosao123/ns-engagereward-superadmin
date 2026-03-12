@@ -111,6 +111,13 @@ class PermissionGroupsTableSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now
             ],
+            [
+                'id' => 15,
+                'group_name' => 'Template',
+                'slug' => 'template',
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
         ]);
     }
 }
